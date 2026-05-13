@@ -1,6 +1,5 @@
 package com.vitaauxilium.vitaauxilium.services;
 
-import com.vitaauxilium.vitaauxilium.dto.request.UserRequestDTO;
 import com.vitaauxilium.vitaauxilium.dto.request.UserUpdateDTO;
 import com.vitaauxilium.vitaauxilium.dto.response.UserResponseDTO;
 import com.vitaauxilium.vitaauxilium.mapper.UserMapper;
@@ -20,7 +19,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
 
     public List<UserResponseDTO> findAll() {
         List<User> users = userRepository.findAll();
@@ -39,12 +37,6 @@ public class UserService {
             throw new EntityNotFoundException("Nenhum usuário encontrado!");
         }
         return userMapper.toResponseDTOList(users);
-    }
-
-    public UserResponseDTO create(UserRequestDTO dto) {
-        User user = userMapper.toEntity(dto);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userMapper.toResponseDTO(userRepository.save(user));
     }
 
     public UserResponseDTO update(UUID id, UserUpdateDTO dto) {
