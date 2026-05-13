@@ -21,7 +21,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "user_id")
+    @Column(name = "user_id", updatable = false, nullable = false)
     private UUID id;
 
     @Column(name = "user_name", nullable = false, length = 45)
@@ -33,7 +33,7 @@ public class User implements UserDetails {
     @Column(name = "user_email", nullable = false, length = 100, unique = true)
     private String email;
 
-    @Column(name = "user_password", columnDefinition = "TEXT")
+    @Column(name = "user_password", length = 60)
     private String password;
 
     @Column(name = "active", nullable = false)
