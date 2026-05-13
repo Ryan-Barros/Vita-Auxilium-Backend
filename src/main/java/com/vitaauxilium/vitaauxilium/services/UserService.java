@@ -33,6 +33,14 @@ public class UserService {
         return userMapper.toResponseDTO(user);
     }
 
+    public List<UserResponseDTO> findByName(String username) {
+        List<User> users = userRepository.findByName("%" + username + "%");
+        if (users.isEmpty()) {
+            throw new EntityNotFoundException("Nenhum usuário encontrado!");
+        }
+        return userMapper.toResponseDTOList(users);
+    }
+
     public UserResponseDTO create(UserRequestDTO dto) {
         User user = userMapper.toEntity(dto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
