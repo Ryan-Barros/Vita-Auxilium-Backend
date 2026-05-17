@@ -21,3 +21,6 @@ server:
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
+
+crypto:
+  secret: ${CRYPTO_SECRET}
