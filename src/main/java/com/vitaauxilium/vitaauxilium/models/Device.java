@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -19,11 +21,15 @@ public class Device {
     private UUID id;
 
     @Column(name = "ambient_id", nullable = false)
-    private String ambientId;
+    private UUID ambientId;
 
     @Column(name = "device_name", nullable = false)
     private String name;
 
     @Column(name = "device_token", nullable = false)
     private String token;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade =  CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "data", nullable = false)
+    private List<DeviceData> data = new ArrayList<>();
 }
