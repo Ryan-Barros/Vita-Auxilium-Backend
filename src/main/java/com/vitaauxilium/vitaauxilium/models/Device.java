@@ -20,8 +20,8 @@ public class Device {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "ambient_id", nullable = false)
-    private UUID ambientId;
+    @Column(name = "environment_id", nullable = false)
+    private UUID environmentId;
 
     @Column(name = "device_name", nullable = false)
     private String name;
