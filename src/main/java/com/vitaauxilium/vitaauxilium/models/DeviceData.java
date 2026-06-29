@@ -1,7 +1,10 @@
 package com.vitaauxilium.vitaauxilium.models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.hibernate.envers.Audited;
 
 import java.sql.Timestamp;

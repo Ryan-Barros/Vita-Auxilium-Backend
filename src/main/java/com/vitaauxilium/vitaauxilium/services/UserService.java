@@ -7,7 +7,6 @@ import com.vitaauxilium.vitaauxilium.models.User;
 import com.vitaauxilium.vitaauxilium.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
