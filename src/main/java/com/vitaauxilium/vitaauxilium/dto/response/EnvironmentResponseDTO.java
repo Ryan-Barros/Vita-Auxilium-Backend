@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public record EnvironmentResponseDTO(
     UUID id,
+    String environmentName,
     String environmentCode,
     LocalDateTime expirationDate,
     String activeCode,
