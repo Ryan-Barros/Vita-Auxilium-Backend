@@ -1,5 +1,6 @@
 services:
   postgres:
+    container_name: "VitaAuxilium-DataBase"
     image: 'postgres:18'
     environment:
       POSTGRES_DB: vitaauxilium-db
@@ -10,6 +11,18 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql
       - ./src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  ngrok:
+    container_name: "Ngrok"
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    command: ["http", "host.docker.internal:8080", "--url=${NGROK_URL}"]
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    ports:
+      - "4040:4040"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 volumes:
   postgres_data:
