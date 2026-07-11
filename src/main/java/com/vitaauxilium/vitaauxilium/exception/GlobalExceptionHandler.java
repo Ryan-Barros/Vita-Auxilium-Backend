@@ -33,9 +33,22 @@ public class GlobalExceptionHandler {
         );
 
         problemDetail.setTitle("Limite do Plano Atingido");
-        problemDetail.setProperty("timestamp", Instant.now());
         problemDetail.setProperty("code", "PLAN_LIMIT_EXCEEDED");
+        problemDetail.setProperty("timestamp", Instant.now());
 
+        return problemDetail;
+    }
+
+    @ExceptionHandler(TooManyRequestsException.class)
+    public ProblemDetail handleTooManyRequests(TooManyRequestsException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.TOO_MANY_REQUESTS,
+                ex.getMessage()
+        );
+
+        problemDetail.setTitle("Limite de Requisições Excedido");
+        problemDetail.setProperty("code", "RATE_LIMIT_EXCEEDED");
+        problemDetail.setProperty("timestamp", java.time.Instant.now());
         return problemDetail;
     }
 }
