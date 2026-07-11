@@ -24,3 +24,7 @@ jwt:
 
 crypto:
   secret: ${CRYPTO_SECRET}
+
+device:
+  token:
+    pepper: ${DEVICE_TOKEN_PEPPER}
