@@ -1,5 +1,6 @@
 package com.vitaauxilium.vitaauxilium.config;
 
+import com.vitaauxilium.vitaauxilium.security.DeviceTokenFilter;
 import com.vitaauxilium.vitaauxilium.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,7 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
+    private final DeviceTokenFilter deviceTokenFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,10 +35,11 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll() // rotas públicas (login e cadastro)
-                        .requestMatchers("/device/**").permitAll() // rotas do dispositivo
+                        .requestMatchers("/device/**").authenticated() // rotas do dispositivo
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
+                .addFilterBefore(deviceTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
