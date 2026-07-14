@@ -31,9 +31,6 @@ public class Environment {
     @Column(name = "expiration_date", nullable = false)
     private LocalDateTime expirationDate;
 
-    @Column(name = "active_code", nullable = false)
-    private String activeCode;
-
     @Column(name = "is_active", nullable = false, columnDefinition = "true")
     private boolean isActive;
 
