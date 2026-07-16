@@ -12,5 +12,5 @@ public record DeviceRequestDTO(
     String name,
 
     @NotBlank(message = "O token do dispositivo não deve ser nulo")
-    String token
+    String tokenHash
 ) {}

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@Configuration
+@RestController
 @RequestMapping("/device")
 @RequiredArgsConstructor
 public class DeviceController {
