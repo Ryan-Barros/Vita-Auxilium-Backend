@@ -1,55 +1,53 @@
 package com.vitaauxilium.vitaauxilium.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.sql.Timestamp;
 
 public record DeviceDataRequestDTO(
-    @NotBlank(message = "TOKEN obrigatório")
-    String token,
+        @NotNull(message = "BPM obrigatório")
+        Integer bpm,
 
-    @NotBlank(message = "BPM obrigatório")
-    int bpm,
+        @NotNull(message = "HRV obrigatório")
+        Integer hrv,
 
-    @NotBlank(message = "HRV obrigatório")
-    int hrv,
+        @NotNull(message = "TEMPERATURE obrigatório")
+        Double temperature,
 
-    @NotBlank(message = "TEMPERATURE obrigatório")
-    double temperature,
+        @NotNull(message = "OXYGENATION obrigatório")
+        Integer oxygenation,
 
-    @NotBlank(message = "OXYGENATION obrigatório")
-    int oxygenation,
+        @NotNull(message = "ACCELEROMETER obrigatório")
+        Integer accelerometer,
 
-    @NotBlank(message = "ACCELEROMETER obrigatório")
-    int accelerometer,
+        @NotNull(message = "GYROSCOPE obrigatório")
+        Integer gyroscope,
 
-    @NotBlank(message = "GYROSCOPE obrigatório")
-    int gyroscope,
+        @NotNull(message = "MOVEMENT obrigatório")
+        Integer movement,
 
-    @NotBlank(message = "MOVEMENT obrigatório")
-    int movement,
+        @NotNull(message = "MOVEMENT_LEVEL obrigatório")
+        Integer movement_level,
 
-    @NotBlank(message = "MOVEMENT_LEVEL obrigatório")
-    int movement_level,
+        @NotNull(message = "FALL obrigatório")
+        Integer fall,
 
-    @NotBlank(message = "FALL obrigatório")
-    int fall,
+        @NotNull(message = "CHANCE_OF_FALL obrigatório")
+        Integer chance_of_fall,
 
-    @NotBlank(message = "BPM obrigatório")
-    int chance_of_fall,
+        @NotNull(message = "BATTERY obrigatório")
+        Integer battery,
 
-    @NotBlank(message = "BATTERY obrigatório")
-    int battery,
+        @NotNull(message = "CHARGING obrigatório")
+        Integer charging,
 
-    @NotBlank(message = "CHARGING obrigatório")
-    int charging,
+        @NotNull(message = "VOLTAGE obrigatório")
+        Integer voltage,
 
-    @NotBlank(message = "VOLTAGE obrigatório")
-    int voltage,
+        @NotNull(message = "DATE obrigatório")
+        Timestamp date,
 
-    @NotBlank(message = "DATE obrigatório")
-    Timestamp date,
-
-    @NotBlank(message = "WIFIRSSI obrigatório")
-    int wifirssi
-) {}
+        @NotNull(message = "WIFIRSSI obrigatório")
+        Integer wifirssi
+) {
+}
