@@ -4,35 +4,36 @@ import java.sql.Timestamp;
 import java.util.UUID;
 
 public record DeviceDataResponseDTO(
-    UUID deviceId,
+        UUID deviceId,
 
-    int bpm,
+        int bpm,
 
-    int hrv,
+        int hrv,
 
-    double temperature,
+        double temperature,
 
-    int oxygenation,
+        int oxygenation,
 
-    int accelerometer,
+        int accelerometer,
 
-    int gyroscope,
+        int gyroscope,
 
-    int movement,
+        int movement,
 
-    int movement_level,
+        int movement_level,
 
-    int fall,
+        int fall,
 
-    int chance_of_fall,
+        int chance_of_fall,
 
-    int battery,
+        int battery,
 
-    int charging,
+        int charging,
 
-    int voltage,
+        int voltage,
 
-    Timestamp date,
+        Timestamp date,
 
-    int wifirssi
-) {}
+        int wifirssi
+) {
+}
