@@ -1,7 +1,12 @@
 package com.vitaauxilium.vitaauxilium.config;
 
+import com.vitaauxilium.vitaauxilium.models.Provider;
+import com.vitaauxilium.vitaauxilium.models.User;
+import com.vitaauxilium.vitaauxilium.models.UserOauth;
 import com.vitaauxilium.vitaauxilium.security.DeviceTokenFilter;
 import com.vitaauxilium.vitaauxilium.security.JwtAuthFilter;
+import com.vitaauxilium.vitaauxilium.services.UserOauthService;
+import com.vitaauxilium.vitaauxilium.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +21,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -26,19 +32,55 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
+    private final UserService userService;
+    private final UserOauthService userOauthService;
     private final DeviceTokenFilter deviceTokenFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
+                .sessionManagement(s -> s
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll() // rotas públicas (login e cadastro)
                         .requestMatchers("/device/**").authenticated() // rotas do dispositivo
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
+                .oauth2Login(oauth -> oauth
+                        .successHandler((request, response, authentication) -> {
+                            OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
+
+                            assert oauthUser != null;
+
+                            String sub = oauthUser.getAttribute("sub");
+                            String email = oauthUser.getAttribute("email");
+                            String name = oauthUser.getAttribute("name");
+                            String pictureUrl = oauthUser.getAttribute("picture");
+
+                            User user = userService.findByEmail(email);
+
+                            if (user == null) {
+                                user = new User();
+                                user.setEmail(email);
+                                user.setName(name);
+                                user.setPicture(pictureUrl);
+                                userService.save(user);
+                            }
+
+                            UserOauth oauthAccont = userOauthService
+                                    .findByUserIdAndProvider(user.getId(), Provider.GOOGLE.getDescription());
+
+                            if (oauthAccont == null) {
+                                oauthAccont = new UserOauth();
+                                oauthAccont.setOauthUser(user);
+                                oauthAccont.setOauthProvider(Provider.GOOGLE);
+                                userOauthService.createOauthAccount(oauthAccont);
+                            }
+
+                            response.sendRedirect("http://localhost:5173/");
+                        }))
                 .addFilterBefore(deviceTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
