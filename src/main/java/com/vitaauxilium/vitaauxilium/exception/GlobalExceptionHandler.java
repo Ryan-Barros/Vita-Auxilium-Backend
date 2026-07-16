@@ -51,4 +51,17 @@ public class GlobalExceptionHandler {
         problemDetail.setProperty("timestamp", java.time.Instant.now());
         return problemDetail;
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ProblemDetail handleAccessDenied(AccessDeniedException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.FORBIDDEN,
+                ex.getMessage()
+        );
+
+        problemDetail.setTitle("Acesso negado");
+        problemDetail.setProperty("code", "ACCESS_DENIED");
+        problemDetail.setProperty("timestamp", java.time.Instant.now());
+        return problemDetail;
+    }
 }
