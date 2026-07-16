@@ -1,9 +1,7 @@
 package com.vitaauxilium.vitaauxilium.services;
 
 import com.vitaauxilium.vitaauxilium.dto.request.AuthRequestDTO;
-import com.vitaauxilium.vitaauxilium.dto.request.UserRequestDTO;
 import com.vitaauxilium.vitaauxilium.dto.response.AuthResponseDTO;
-import com.vitaauxilium.vitaauxilium.dto.response.UserResponseDTO;
 import com.vitaauxilium.vitaauxilium.mapper.UserMapper;
 import com.vitaauxilium.vitaauxilium.models.User;
 import com.vitaauxilium.vitaauxilium.repositories.UserRepository;
@@ -34,9 +32,8 @@ public class AuthService {
         return new AuthResponseDTO(jwtService.generateToken(user));
     }
 
-    public UserResponseDTO register(UserRequestDTO dto) {
-        User user = userMapper.toEntity(dto);
+    public User register(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userMapper.toResponseDTO(userRepository.save(user));
+        return userRepository.save(user);
     }
 }
