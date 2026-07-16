@@ -1,13 +1,19 @@
 package com.vitaauxilium.vitaauxilium.models;
 
+import com.vitaauxilium.vitaauxilium.config.GeneratedUuidV7;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.Audited;
+import org.hibernate.validator.constraints.br.CPF;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -15,14 +21,19 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Audited
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedUuidV7
     @Column(name = "user_id", updatable = false, nullable = false)
     private UUID id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_profile", nullable = false)
+    private Profile userProfile;
 
     @Column(name = "user_name", nullable = false, length = 45)
     private String name;
@@ -30,8 +41,16 @@ public class User implements UserDetails {
     @Column(name = "user_phone", nullable = false, length = 11)
     private String phone;
 
+    @Email
     @Column(name = "user_email", nullable = false, length = 100, unique = true)
     private String email;
+
+    @Column(name = "user_picture")
+    private String picture;
+
+    @CPF
+    @Column(name = "cpf")
+    private String cpf;
 
     @Column(name = "user_password", length = 60)
     private String password;
@@ -39,9 +58,17 @@ public class User implements UserDetails {
     @Column(name = "active", nullable = false)
     private boolean active = true;
 
+    @Column(name = "active_ambient")
+    private UUID activeAmbient;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<EnvironmentMember> environments = new ArrayList<>();
+
     @NullMarked
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        String roleName = "ROLE_" + this.userProfile.name();
         return List.of();
     }
 
