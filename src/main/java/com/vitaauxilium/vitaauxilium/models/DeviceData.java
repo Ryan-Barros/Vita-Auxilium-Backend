@@ -1,5 +1,6 @@
 package com.vitaauxilium.vitaauxilium.models;
 
+import com.vitaauxilium.vitaauxilium.config.GeneratedUuidV7;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,8 +21,9 @@ import java.util.UUID;
 public class DeviceData {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedUuidV7
     @EqualsAndHashCode.Include
+    @Column(name = "device_data_id", updatable = false, nullable = false)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
