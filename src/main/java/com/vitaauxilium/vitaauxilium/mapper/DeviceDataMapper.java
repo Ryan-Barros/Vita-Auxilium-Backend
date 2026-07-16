@@ -5,9 +5,13 @@ import com.vitaauxilium.vitaauxilium.dto.response.DeviceDataResponseDTO;
 import com.vitaauxilium.vitaauxilium.models.DeviceData;
 import org.mapstruct.Mapper;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface DeviceDataMapper {
    DeviceData toEntity(DeviceDataRequestDTO dto);
 
    DeviceDataResponseDTO toResponseDTO(DeviceData entity);
+
+   List<DeviceDataResponseDTO> toResponseDTOList(List<DeviceData> entities);
 }
