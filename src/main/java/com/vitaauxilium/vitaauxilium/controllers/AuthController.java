@@ -4,6 +4,8 @@ import com.vitaauxilium.vitaauxilium.dto.request.AuthRequestDTO;
 import com.vitaauxilium.vitaauxilium.dto.request.UserRequestDTO;
 import com.vitaauxilium.vitaauxilium.dto.response.AuthResponseDTO;
 import com.vitaauxilium.vitaauxilium.dto.response.UserResponseDTO;
+import com.vitaauxilium.vitaauxilium.mapper.UserMapper;
+import com.vitaauxilium.vitaauxilium.models.User;
 import com.vitaauxilium.vitaauxilium.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserMapper userMapper;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid AuthRequestDTO dto) {
@@ -28,6 +31,8 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> register(@RequestBody @Valid UserRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(dto));
+        User user = userMapper.toEntity(dto);
+        UserResponseDTO response = userMapper.toResponseDTO(authService.register(user));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

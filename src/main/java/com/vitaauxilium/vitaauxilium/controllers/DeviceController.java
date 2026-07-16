@@ -2,10 +2,12 @@ package com.vitaauxilium.vitaauxilium.controllers;
 
 import com.vitaauxilium.vitaauxilium.dto.request.DeviceRequestDTO;
 import com.vitaauxilium.vitaauxilium.dto.response.DeviceResponseDTO;
+import com.vitaauxilium.vitaauxilium.mapper.DeviceMapper;
+import com.vitaauxilium.vitaauxilium.models.Device;
 import com.vitaauxilium.vitaauxilium.services.DeviceService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,20 +20,25 @@ import java.util.UUID;
 public class DeviceController {
 
     private final DeviceService deviceService;
+    private final DeviceMapper deviceMapper;
 
     @GetMapping
     public ResponseEntity<List<DeviceResponseDTO>> findAllDevices() {
-        return ResponseEntity.ok(deviceService.findAll());
+        List<Device> entity = deviceService.findAll();
+        return ResponseEntity.ok(deviceMapper.toResponseDTOList(entity));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<DeviceResponseDTO> findDeviceById(@PathVariable UUID id) {
-        return ResponseEntity.ok(deviceService.findById(id));
+        Device entity = deviceService.findById(id);
+        return ResponseEntity.ok(deviceMapper.toResponseDTO(entity));
     }
 
     @PostMapping
-    public ResponseEntity<DeviceResponseDTO> createDevice(@RequestBody DeviceRequestDTO deviceRequestDTO) {
-        return ResponseEntity.ok(deviceService.create(deviceRequestDTO));
+    public ResponseEntity<DeviceResponseDTO> createDevice(@RequestBody @Valid DeviceRequestDTO deviceRequestDTO) {
+        Device entity = deviceMapper.toEntity(deviceRequestDTO);
+        deviceService.create(entity);
+        return ResponseEntity.ok(deviceMapper.toResponseDTO(entity));
     }
 
     @DeleteMapping("/{id}")
