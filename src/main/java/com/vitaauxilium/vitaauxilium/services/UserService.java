@@ -1,7 +1,6 @@
 package com.vitaauxilium.vitaauxilium.services;
 
 import com.vitaauxilium.vitaauxilium.dto.request.UserUpdateDTO;
-import com.vitaauxilium.vitaauxilium.dto.response.UserResponseDTO;
 import com.vitaauxilium.vitaauxilium.mapper.UserMapper;
 import com.vitaauxilium.vitaauxilium.models.User;
 import com.vitaauxilium.vitaauxilium.repositories.UserRepository;
@@ -19,29 +18,36 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public List<UserResponseDTO> findAll() {
-        List<User> users = userRepository.findAll();
-        return userMapper.toResponseDTOList(users);
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 
-    public UserResponseDTO findById(UUID id) {
-        User user = userRepository.findById(id)
+    public User findById(UUID id) {
+        return userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado!"));
-        return userMapper.toResponseDTO(user);
     }
 
-    public List<UserResponseDTO> findByName(String username) {
+    public List<User> findByName(String username) {
         List<User> users = userRepository.findByName("%" + username + "%");
         if (users.isEmpty()) {
             throw new EntityNotFoundException("Nenhum usuário encontrado!");
         }
-        return userMapper.toResponseDTOList(users);
+        return users;
     }
 
-    public UserResponseDTO update(UUID id, UserUpdateDTO dto) {
+    public User save(User user) {
+        return userRepository.save(user);
+    }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado!"));
+    }
+
+    public User update(UUID id, User changes) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado!"));
-        userMapper.updateEntityFromDTO(dto, user);
-        return userMapper.toResponseDTO(userRepository.save(user));
+        userMapper.updateEntityFromDTO(user, changes);
+        return userRepository.save(user);
     }
 }
