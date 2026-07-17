@@ -67,15 +67,18 @@ public class User implements UserDetails {
     @NullMarked
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        String roleName = "ROLE_" + this.userProfile.name();
-        return List.of();
+        return List.of(new SimpleGrantedAuthority(userProfile.getRoleName()));
     }
 
     @NullMarked
     @Override
     public String getUsername() {
         return email;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.active;
     }
 
 }
