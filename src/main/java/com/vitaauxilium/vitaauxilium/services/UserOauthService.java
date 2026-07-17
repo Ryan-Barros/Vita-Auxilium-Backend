@@ -1,5 +1,6 @@
 package com.vitaauxilium.vitaauxilium.services;
 
+import com.vitaauxilium.vitaauxilium.models.Provider;
 import com.vitaauxilium.vitaauxilium.models.UserOauth;
 import com.vitaauxilium.vitaauxilium.repositories.UserOauthRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -14,8 +15,8 @@ public class UserOauthService {
 
     private final UserOauthRepository userOauthRepository;
 
-    public UserOauth findByUserIdAndProvider(UUID userId, String provider) {
-        return userOauthRepository.findByUserIdAndProvider(userId, provider)
+    public UserOauth findByUserIdAndProvider(UUID userId, Provider provider) {
+        return userOauthRepository.findByOauthUser_IdAndOauthProvider(userId, provider)
                 .orElseThrow(() -> new EntityNotFoundException("Login externo não encontrado!"));
     }
 

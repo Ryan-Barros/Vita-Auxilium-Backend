@@ -31,7 +31,6 @@ public class Device {
     @Column(name = "device_token_hash", nullable = false, unique = true)
     private String tokenHash;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade =  CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "data", nullable = false)
+    @OneToMany(mappedBy = "deviceId", fetch = FetchType.LAZY, cascade =  CascadeType.ALL, orphanRemoval = true)
     private List<DeviceData> data = new ArrayList<>();
 }

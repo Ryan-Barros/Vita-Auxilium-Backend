@@ -5,6 +5,7 @@ import com.vitaauxilium.vitaauxilium.models.User;
 import com.vitaauxilium.vitaauxilium.models.UserOauth;
 import com.vitaauxilium.vitaauxilium.security.DeviceTokenFilter;
 import com.vitaauxilium.vitaauxilium.security.JwtAuthFilter;
+import com.vitaauxilium.vitaauxilium.security.JwtService;
 import com.vitaauxilium.vitaauxilium.services.UserOauthService;
 import com.vitaauxilium.vitaauxilium.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class SecurityConfig {
     private final UserService userService;
     private final UserOauthService userOauthService;
     private final DeviceTokenFilter deviceTokenFilter;
+    private final JwtService jwtService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -70,7 +72,7 @@ public class SecurityConfig {
                             }
 
                             UserOauth oauthAccont = userOauthService
-                                    .findByUserIdAndProvider(user.getId(), Provider.GOOGLE.getDescription());
+                                    .findByUserIdAndProvider(user.getId(), Provider.GOOGLE);
 
                             if (oauthAccont == null) {
                                 oauthAccont = new UserOauth();
@@ -79,7 +81,8 @@ public class SecurityConfig {
                                 userOauthService.createOauthAccount(oauthAccont);
                             }
 
-                            response.sendRedirect("http://localhost:5173/");
+                            String jwt = jwtService.generateToken(user);
+                            response.sendRedirect("http://localhost:5173/oauth/callback?token=" + jwt);
                         }))
                 .addFilterBefore(deviceTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
