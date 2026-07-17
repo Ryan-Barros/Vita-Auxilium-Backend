@@ -17,13 +17,13 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(rollbackFor =  Exception.class)
+@Transactional(rollbackFor = Exception.class)
 public class EnvironmentMemberFacadeService {
     private final EnvironmentService environmentService;
     private final EnvironmentMapper environmentMapper;
 
-    public EnvironmentResponseDTO createWithRelation(User owner, EnvironmentRequestDTO dto){
-        if(owner.getUserProfile() != Profile.FAMILY){
+    public EnvironmentResponseDTO createWithRelation(User owner, EnvironmentRequestDTO dto) {
+        if (owner.getUserProfile() != Profile.FAMILY) {
             throw new AccessDeniedException("Precisa ser um familiar para criar um ambiente!");
         }
         Environment env = environmentMapper.toEntity(dto);
@@ -38,11 +38,17 @@ public class EnvironmentMemberFacadeService {
         return environmentMapper.toResponseDTO(savedEnv);
     }
 
-    public EnvironmentResponseDTO updateWithRelation(User owner, EnvironmentUpdateDTO dto, UUID envId){
-        if(owner.getUserProfile() != Profile.FAMILY){
+    public EnvironmentResponseDTO updateWithRelation(User owner, EnvironmentUpdateDTO dto, UUID envId) {
+        Environment existingEnv = environmentService.findById(envId);
+        boolean isMember = existingEnv.getMembers().stream()
+                .anyMatch(m -> m
+                        .getUser()
+                        .getId()
+                        .equals(owner.getId()));
+
+        if (owner.getUserProfile() != Profile.FAMILY || !isMember) {
             throw new AccessDeniedException("Precisa ser um familiar para editar um ambiente!");
         }
-        Environment existingEnv = environmentService.findById(envId);
 
         Environment changesFromDto = environmentMapper.toEntityFromUpdateDTO(dto);
 
