@@ -1,5 +1,6 @@
 package com.vitaauxilium.vitaauxilium.security;
 
+import com.vitaauxilium.vitaauxilium.exception.TooManyRequestsException;
 import com.vitaauxilium.vitaauxilium.repositories.DeviceRepository;
 import com.vitaauxilium.vitaauxilium.utils.DeviceCrypto;
 import io.jsonwebtoken.lang.Collections;
@@ -22,6 +23,7 @@ public class DeviceTokenFilter extends OncePerRequestFilter {
 
     private final DeviceRepository deviceRepository;
     private final DeviceCrypto crypto;
+    private final DeviceRateLimiterService rateLimiterService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -51,6 +53,10 @@ public class DeviceTokenFilter extends OncePerRequestFilter {
         }
 
         var device = deviceOpt.get();
+
+        if (!rateLimiterService.tryConsume(device.getId())) {
+            throw new TooManyRequestsException("Limite de requisições atingida");
+        }
 
         var authentication = new UsernamePasswordAuthenticationToken(device.getId(), null, Collections.emptyList());
         SecurityContextHolder.getContext().setAuthentication(authentication);
