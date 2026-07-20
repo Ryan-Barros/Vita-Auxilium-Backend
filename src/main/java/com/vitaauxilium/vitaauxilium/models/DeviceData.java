@@ -7,7 +7,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.UUID;
 
@@ -28,50 +30,83 @@ public class DeviceData {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "device_id", nullable = false)
-    private Device deviceId;
+    @NotAudited
+    private Device device;
 
     @Column(nullable = false, updatable = false)
     private int bpm;
 
     @Column(nullable = false, updatable = false)
-    private int hrv;
+    private int bpmMedia;
 
     @Column(nullable = false, updatable = false)
-    private double temperature;
+    private BigDecimal temperature;
 
     @Column(nullable = false, updatable = false)
     private int oxygenation;
 
-    @Column(nullable = false, updatable = false)
-    private int accelerometer;
+    private int contactSensor;
 
     @Column(nullable = false, updatable = false)
-    private int gyroscope;
+    private BigDecimal accelerometerX;
 
     @Column(nullable = false, updatable = false)
-    private int movement;
+    private BigDecimal accelerometerY;
+
+    @Column(nullable = false, updatable = false)
+    private BigDecimal accelerometerZ;
+
+    @Column(nullable = false, updatable = false)
+    private BigDecimal accelerometer;
+
+    @Column(nullable = false, updatable = false)
+    private BigDecimal gyroscopeX;
+
+    @Column(nullable = false, updatable = false)
+    private BigDecimal gyroscopeY;
+
+    @Column(nullable = false, updatable = false)
+    private BigDecimal gyroscopeZ;
+
+    @Column(nullable = false, updatable = false)
+    private BigDecimal gyroscope;
+
+    @Column(nullable = false, updatable = false)
+    private BigDecimal movement;
 
     @Column(nullable = false, updatable = false)
     private int movement_level;
 
     @Column(nullable = false, updatable = false)
-    private int fall;
-
-    @Column(nullable = false, updatable = false)
     private int chance_of_fall;
 
     @Column(nullable = false, updatable = false)
-    private int battery;
+    private int detectedFall;
 
     @Column(nullable = false, updatable = false)
-    private int charging;
+    private int alert;
 
     @Column(nullable = false, updatable = false)
-    private int voltage;
+    private int spo2Valid;
+
+    @Column(nullable = false, updatable = false)
+    private int bpmValid;
+
+    @Column(nullable = false, updatable = false)
+    private int sensorMax30102Heart;
+
+    @Column(nullable = false, updatable = false)
+    private int sensorMax30205Temperature;
+
+    @Column(nullable = false, updatable = false)
+    private int sensorMpu6050Fall;
 
     @Column(nullable = false, updatable = false)
     private Timestamp date;
 
     @Column(nullable = false, updatable = false)
     private int wifirssi;
+
+    @Column(nullable = false, updatable = false)
+    private int onTime;
 }
