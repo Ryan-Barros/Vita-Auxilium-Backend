@@ -1,5 +1,6 @@
 package com.vitaauxilium.vitaauxilium.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vitaauxilium.vitaauxilium.config.GeneratedUuidV7;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,15 +23,18 @@ public class Device {
     @Column(name = "device_id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "environment_id", nullable = false)
-    private UUID environmentId;
+    @OneToOne
+    @JoinColumn(name = "environment_id", nullable = false)
+    private Environment environment;
 
     @Column(name = "device_name", nullable = false)
     private String name;
 
+    @JsonIgnore
     @Column(name = "device_token_hash", nullable = false, unique = true)
     private String tokenHash;
 
-    @OneToMany(mappedBy = "deviceId", fetch = FetchType.LAZY, cascade =  CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "device", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DeviceData> data = new ArrayList<>();
 }

@@ -2,8 +2,10 @@ package com.vitaauxilium.vitaauxilium.services;
 
 import com.vitaauxilium.vitaauxilium.models.Device;
 import com.vitaauxilium.vitaauxilium.models.DeviceData;
+import com.vitaauxilium.vitaauxilium.models.Environment;
 import com.vitaauxilium.vitaauxilium.repositories.DeviceDataRepository;
 import com.vitaauxilium.vitaauxilium.repositories.DeviceRepository;
+import com.vitaauxilium.vitaauxilium.repositories.EnvironmentRepository;
 import com.vitaauxilium.vitaauxilium.utils.DeviceCrypto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ public class DeviceService {
 
     private final DeviceRepository deviceRepository;
     private final DeviceDataRepository deviceDataRepository;
+    private final EnvironmentRepository environmentRepository;
     private final DeviceCrypto crypto;
 
     @Transactional(readOnly = true)
@@ -33,9 +36,12 @@ public class DeviceService {
                 .orElseThrow(() -> new EntityNotFoundException("Dispositivo não encontrado"));
     }
 
-    public Device create(Device device) {
-        String hashToken = crypto.hashToken(device.getTokenHash());
-        device.setTokenHash(hashToken);
+    public Device create(Device device, UUID environmentId, String rawToken) {
+        Environment environment = environmentRepository.findById(environmentId)
+                .orElseThrow(() -> new EntityNotFoundException("Ambiente não encontrado"));
+
+        device.setEnvironment(environment);
+        device.setTokenHash(crypto.hashToken(rawToken));
         return deviceRepository.save(device);
     }
 
