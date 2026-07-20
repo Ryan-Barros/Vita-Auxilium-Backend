@@ -33,8 +33,8 @@ public class Environment {
     @Column(name = "expiration_date", nullable = false)
     private Instant expirationDate;
 
-    @Column(name = "is_active", nullable = false, columnDefinition = "true")
-    private boolean isActive;
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
 
     @OneToMany(mappedBy = "environment", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EnvironmentMember> members = new ArrayList<>();

@@ -31,7 +31,7 @@ public class DeviceDataController {
             @AuthenticationPrincipal UUID deviceId,
             @RequestBody @Valid DeviceDataRequestDTO dto) {
         DeviceData entity = deviceDataMapper.toEntity(dto);
-        entity.setDeviceId(deviceService.findById(deviceId));
+        entity.setDevice(deviceService.findById(deviceId));
         deviceDataService.create(entity);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

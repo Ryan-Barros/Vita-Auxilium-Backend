@@ -31,7 +31,7 @@ public class DeviceTokenFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         String requestURI = request.getRequestURI();
-        if (!requestURI.startsWith("/device")) {
+        if (!requestURI.startsWith("/device/data")) {
             filterChain.doFilter(request, response);
             return;
         }

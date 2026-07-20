@@ -25,7 +25,7 @@ public class CodeGenerator {
     public String generateUniqueCode(String prefix) {
         for (int i = 0; i < 10; i++) {
             String code = prefix + generateRandomCode();
-            if (!environmentRepository.existsByCode(code)) {
+            if (!environmentRepository.existsByEnvironmentCode(code)) {
                 return code;
             }
         }

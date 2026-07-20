@@ -7,7 +7,6 @@ import com.vitaauxilium.vitaauxilium.models.Device;
 import com.vitaauxilium.vitaauxilium.services.DeviceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

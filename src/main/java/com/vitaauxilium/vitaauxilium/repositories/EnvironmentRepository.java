@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface EnvironmentRepository extends JpaRepository<Environment, UUID> {
-    Optional<Environment> findEnvironmentByCode(String code);
+    Optional<Environment> findEnvironmentByEnvironmentCode(String code);
 
-    Boolean existsByCode(String code);
+    Boolean existsByEnvironmentCode(String code);
 }
