@@ -3,6 +3,7 @@ package com.vitaauxilium.vitaauxilium.exception;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -76,6 +77,30 @@ public class GlobalExceptionHandler {
 
         problemDetail.setTitle("Acesso negado");
         problemDetail.setProperty("code", "ACCESS_DENIED");
+        problemDetail.setProperty("timestamp", java.time.Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail handleMessageNotReadable(HttpMessageNotReadableException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "Corpo da requisição inválido ou perfil de usuário desconhecido"
+        );
+        problemDetail.setTitle("Requisição Malformada");
+        problemDetail.setProperty("code", "MALFORMED_REQUEST");
+        problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ProblemDetail handleDuplicateResourceException(DuplicateResourceException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                ex.getMessage()
+        );
+        problemDetail.setTitle("Recurso duplicado");
+        problemDetail.setProperty("code", "DUPLICATE");
         problemDetail.setProperty("timestamp", java.time.Instant.now());
         return problemDetail;
     }
