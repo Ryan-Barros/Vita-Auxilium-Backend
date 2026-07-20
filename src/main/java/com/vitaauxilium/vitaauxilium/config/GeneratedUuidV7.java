@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 
 @IdGeneratorType(UuidV7Generator.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD,ElementType.METHOD})
+@Target({ElementType.FIELD, ElementType.METHOD})
 public @interface GeneratedUuidV7 {
 }

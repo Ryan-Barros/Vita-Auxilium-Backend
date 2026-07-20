@@ -1,6 +1,5 @@
 package com.vitaauxilium.vitaauxilium.services;
 
-import com.vitaauxilium.vitaauxilium.dto.request.UserUpdateDTO;
 import com.vitaauxilium.vitaauxilium.mapper.UserMapper;
 import com.vitaauxilium.vitaauxilium.models.User;
 import com.vitaauxilium.vitaauxilium.repositories.UserRepository;

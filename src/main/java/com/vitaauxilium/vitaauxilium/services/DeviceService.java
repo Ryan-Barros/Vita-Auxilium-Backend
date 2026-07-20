@@ -1,7 +1,5 @@
 package com.vitaauxilium.vitaauxilium.services;
 
-import com.vitaauxilium.vitaauxilium.mapper.DeviceDataMapper;
-import com.vitaauxilium.vitaauxilium.mapper.DeviceMapper;
 import com.vitaauxilium.vitaauxilium.models.Device;
 import com.vitaauxilium.vitaauxilium.models.DeviceData;
 import com.vitaauxilium.vitaauxilium.repositories.DeviceDataRepository;
@@ -17,7 +15,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(rollbackFor =  Exception.class)
+@Transactional(rollbackFor = Exception.class)
 public class DeviceService {
 
     private final DeviceRepository deviceRepository;

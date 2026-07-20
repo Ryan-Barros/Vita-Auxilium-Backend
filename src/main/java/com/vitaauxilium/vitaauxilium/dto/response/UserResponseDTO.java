@@ -4,4 +4,5 @@ public record UserResponseDTO(
         String name,
         String phone,
         String email
-) {}
+) {
+}

@@ -1,6 +1,5 @@
 package com.vitaauxilium.vitaauxilium.services;
 
-import com.vitaauxilium.vitaauxilium.dto.response.EnvironmentResponseDTO;
 import com.vitaauxilium.vitaauxilium.mapper.EnvironmentMapper;
 import com.vitaauxilium.vitaauxilium.models.Environment;
 import com.vitaauxilium.vitaauxilium.repositories.EnvironmentRepository;
@@ -17,7 +16,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(rollbackFor =  Exception.class)
+@Transactional(rollbackFor = Exception.class)
 public class EnvironmentService {
 
     private final EnvironmentRepository environmentRepository;

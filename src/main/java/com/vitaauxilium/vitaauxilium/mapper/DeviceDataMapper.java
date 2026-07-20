@@ -9,9 +9,9 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface DeviceDataMapper {
-   DeviceData toEntity(DeviceDataRequestDTO dto);
+    DeviceData toEntity(DeviceDataRequestDTO dto);
 
-   DeviceDataResponseDTO toResponseDTO(DeviceData entity);
+    DeviceDataResponseDTO toResponseDTO(DeviceData entity);
 
-   List<DeviceDataResponseDTO> toResponseDTOList(List<DeviceData> entities);
+    List<DeviceDataResponseDTO> toResponseDTOList(List<DeviceData> entities);
 }
