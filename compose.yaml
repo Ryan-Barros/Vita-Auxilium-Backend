@@ -10,13 +10,12 @@ services:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql
-      - ./src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   ngrok:
     container_name: "Ngrok"
     image: ngrok/ngrok:latest
     restart: unless-stopped
-    command: ["http", "host.docker.internal:8080", "--url=${NGROK_URL}"]
+    command: [ "http", "host.docker.internal:8080", "--url=${NGROK_URL}" ]
     environment:
       - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
     ports:
