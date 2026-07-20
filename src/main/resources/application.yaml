@@ -23,9 +23,9 @@ spring:
             client-id: ${CLIENT_ID}
             client-secret: ${CLIENT_SECRET}
             scope:
-            - openid
-            - profile
-            - email
+              - openid
+              - profile
+              - email
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
 
 server:
