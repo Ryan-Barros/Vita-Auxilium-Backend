@@ -1,6 +1,5 @@
 package com.vitaauxilium.vitaauxilium.security;
 
-import com.vitaauxilium.vitaauxilium.exception.TooManyRequestsException;
 import com.vitaauxilium.vitaauxilium.repositories.DeviceRepository;
 import com.vitaauxilium.vitaauxilium.utils.DeviceCrypto;
 import io.jsonwebtoken.lang.Collections;
@@ -10,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -55,7 +55,8 @@ public class DeviceTokenFilter extends OncePerRequestFilter {
         var device = deviceOpt.get();
 
         if (!rateLimiterService.tryConsume(device.getId())) {
-            throw new TooManyRequestsException("Limite de requisições atingida");
+            sendErrorTooManyRequests(response, "Limite de requisições atingida");
+            return;
         }
 
         var authentication = new UsernamePasswordAuthenticationToken(device.getId(), null, Collections.emptyList());
@@ -69,5 +70,12 @@ public class DeviceTokenFilter extends OncePerRequestFilter {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"" + message + "\"}");
+    }
+
+    private void sendErrorTooManyRequests(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("{\"error\": \"Too Many Requests\", \"message\": \"" + message + "\"}");
     }
 }
