@@ -28,8 +28,8 @@ public class DeviceDataService {
                 .orElseThrow(() -> new EntityNotFoundException("Dados não encontrados"));
     }
 
-    public void create(DeviceData data) {
-        deviceDataRepository.save(data);
+    public DeviceData create(DeviceData data) {
+        return deviceDataRepository.save(data);
     }
 
     public void delete(UUID id) {
