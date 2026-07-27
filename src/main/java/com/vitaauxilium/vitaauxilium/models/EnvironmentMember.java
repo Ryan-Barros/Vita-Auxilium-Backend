@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.envers.Audited;
 
 import java.util.UUID;
@@ -14,7 +15,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @Audited
 @Entity
-@Table(name = "environment_members")
+@Table(name = "environment_members",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_environment_member_user_environment",
+                columnNames = {"member_user_id", "member_environment_id"}
+        )
+)
 public class EnvironmentMember {
 
     @Id
