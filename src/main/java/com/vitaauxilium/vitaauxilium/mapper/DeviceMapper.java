@@ -18,7 +18,6 @@ public interface DeviceMapper {
     List<DeviceResponseDTO> toResponseDTOList(List<Device> devices);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "tokenHash", source = "token")
     @Mapping(target = "data", ignore = true)
     @Mapping(target = "environment", ignore = true)
     Device toEntity(DeviceRequestDTO dto);
