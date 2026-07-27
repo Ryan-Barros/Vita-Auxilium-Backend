@@ -11,7 +11,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = EnvironmentMemberMapper.class)
 public interface EnvironmentMapper {
     Environment toEntity(EnvironmentRequestDTO dto);
 
