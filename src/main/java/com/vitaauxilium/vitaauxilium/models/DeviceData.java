@@ -1,5 +1,6 @@
 package com.vitaauxilium.vitaauxilium.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.vitaauxilium.vitaauxilium.config.GeneratedUuidV7;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,7 +11,7 @@ import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -31,6 +32,7 @@ public class DeviceData {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "device_id", nullable = false)
     @NotAudited
+    @JsonIgnoreProperties("data")
     private Device device;
 
     @Column(nullable = false, updatable = false)
@@ -45,6 +47,7 @@ public class DeviceData {
     @Column(nullable = false, updatable = false)
     private int oxygenation;
 
+    @Column(nullable = false, updatable = false)
     private int contactSensor;
 
     @Column(nullable = false, updatable = false)
@@ -75,10 +78,10 @@ public class DeviceData {
     private BigDecimal movement;
 
     @Column(nullable = false, updatable = false)
-    private int movement_level;
+    private int movementLevel;
 
     @Column(nullable = false, updatable = false)
-    private int chance_of_fall;
+    private int chanceOfFall;
 
     @Column(nullable = false, updatable = false)
     private int detectedFall;
@@ -102,7 +105,7 @@ public class DeviceData {
     private int sensorMpu6050Fall;
 
     @Column(nullable = false, updatable = false)
-    private Timestamp date;
+    private LocalDateTime date;
 
     @Column(nullable = false, updatable = false)
     private int wifirssi;

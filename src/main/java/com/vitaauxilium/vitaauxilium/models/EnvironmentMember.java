@@ -1,11 +1,11 @@
 package com.vitaauxilium.vitaauxilium.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.vitaauxilium.vitaauxilium.config.GeneratedUuidV7;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.hibernate.envers.Audited;
 
 import java.util.UUID;
@@ -30,9 +30,11 @@ public class EnvironmentMember {
 
     @ManyToOne
     @JoinColumn(name = "member_user_id", nullable = false, updatable = false)
+    @JsonIgnoreProperties("environments")
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "member_environment_id", nullable = false, updatable = false)
+    @JsonIgnoreProperties("members")
     private Environment environment;
 }

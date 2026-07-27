@@ -1,6 +1,7 @@
 package com.vitaauxilium.vitaauxilium.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.vitaauxilium.vitaauxilium.config.GeneratedUuidV7;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class Device {
 
     @OneToOne
     @JoinColumn(name = "environment_id", nullable = false)
+    @JsonIgnoreProperties("members")
     private Environment environment;
 
     @Column(name = "device_name", nullable = false)
@@ -36,5 +38,6 @@ public class Device {
 
     @JsonIgnore
     @OneToMany(mappedBy = "device", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("device")
     private List<DeviceData> data = new ArrayList<>();
 }
