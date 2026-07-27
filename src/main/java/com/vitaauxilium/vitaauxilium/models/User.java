@@ -1,5 +1,6 @@
 package com.vitaauxilium.vitaauxilium.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vitaauxilium.vitaauxilium.config.GeneratedUuidV7;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -52,6 +53,7 @@ public class User implements UserDetails {
     @Column(name = "cpf")
     private String cpf;
 
+    @JsonIgnore
     @Column(name = "user_password", length = 60)
     private String password;
 
@@ -61,13 +63,16 @@ public class User implements UserDetails {
     @Column(name = "active_ambient")
     private UUID activeAmbient;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<EnvironmentMember> environments = new ArrayList<>();
 
     @NullMarked
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(userProfile.getRoleName()));
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(this.userProfile.getRoleName()));
+        return authorities;
     }
 
     @NullMarked
