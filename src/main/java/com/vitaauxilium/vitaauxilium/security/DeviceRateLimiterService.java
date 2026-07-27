@@ -21,8 +21,8 @@ public class DeviceRateLimiterService {
 
     private Bucket newBucket() {
         Bandwidth limit = Bandwidth.builder()
-                .capacity(60)
-                .refillGreedy(60, Duration.ofMinutes(1))
+                .capacity(20)
+                .refillGreedy(15, Duration.ofMinutes(1))
                 .build();
         return Bucket.builder().addLimit(limit).build();
     }
