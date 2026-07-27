@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.envers.Audited;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -24,6 +23,9 @@ public class UserOauth {
     @GeneratedUuidV7
     @Column(name = "oauth_id", nullable = false, updatable = false)
     private UUID id;
+
+    @Column(name = "oauth_sub", nullable = false, updatable = false)
+    private String oauthSub;
 
     @OneToOne
     @JoinColumn(name = "oauth_user_id", nullable = false)
