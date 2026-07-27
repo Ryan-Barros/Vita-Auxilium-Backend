@@ -34,9 +34,9 @@ public class DeviceController {
     }
 
     @PostMapping
-    public ResponseEntity<DeviceResponseDTO> createDevice(@RequestBody @Valid DeviceRequestDTO deviceRequestDTO) {
-        Device entity = deviceMapper.toEntity(deviceRequestDTO);
-        deviceService.create(entity);
+    public ResponseEntity<DeviceResponseDTO> createDevice(@RequestBody @Valid DeviceRequestDTO dto) {
+        Device entity = deviceMapper.toEntity(dto);
+        deviceService.create(entity, dto.environmentId(), dto.tokenHash());
         return ResponseEntity.ok(deviceMapper.toResponseDTO(entity));
     }
 
