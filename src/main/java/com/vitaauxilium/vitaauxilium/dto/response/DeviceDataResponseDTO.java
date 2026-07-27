@@ -1,6 +1,6 @@
 package com.vitaauxilium.vitaauxilium.dto.response;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record DeviceDataResponseDTO(
@@ -20,19 +20,13 @@ public record DeviceDataResponseDTO(
 
         int movement,
 
-        int movement_level,
+        int movementLevel,
 
         int fall,
 
-        int chance_of_fall,
+        int chanceOfFall,
 
-        int battery,
-
-        int charging,
-
-        int voltage,
-
-        Timestamp date,
+        LocalDateTime date,
 
         int wifirssi
 ) {
