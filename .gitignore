@@ -35,3 +35,4 @@ build/
 
 ### System logs ###
 *.log
+*.gz
