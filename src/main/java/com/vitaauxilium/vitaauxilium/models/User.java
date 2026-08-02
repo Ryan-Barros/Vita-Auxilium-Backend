@@ -34,7 +34,7 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_profile", nullable = false)
-    private Profile userProfile;
+    private Profile profile;
 
     @Column(name = "user_name", nullable = false, length = 45)
     private String name;
@@ -71,7 +71,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(this.userProfile.getRoleName()));
+        authorities.add(new SimpleGrantedAuthority(this.profile.getRoleName()));
         return authorities;
     }
 

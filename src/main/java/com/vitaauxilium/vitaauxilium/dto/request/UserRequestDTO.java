@@ -14,8 +14,7 @@ public record UserRequestDTO(
         String phone,
 
         @NotNull(message = "Perfil é obrigatório")
-        @JsonAlias({"profile"})
-        Profile userProfile,
+        Profile profile,
 
         @Email(message = "E-mail inválido")
         @NotBlank(message = "E-mail é obrigatório")
