@@ -28,6 +28,9 @@ spring:
               - email
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
 
+cookie:
+  secure: true
+
 server:
   port: 8080
 
