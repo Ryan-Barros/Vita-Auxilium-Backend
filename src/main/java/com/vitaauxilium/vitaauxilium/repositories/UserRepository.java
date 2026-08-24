@@ -13,6 +13,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     Optional<User> findByEmail(String email);
 
-    @Query(value = "select * from users where unaccent('unaccent', name) ilike unaccent('unaccent', :name)", nativeQuery = true)
+    @Query(value = "select * from users where immutable_unaccent(user_name) ilike immutable_unaccent(:name)", nativeQuery = true)
     List<User> findByName(@Param("name") String name);
 }
