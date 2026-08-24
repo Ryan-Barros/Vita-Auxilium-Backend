@@ -1,7 +1,6 @@
 package com.vitaauxilium.vitaauxilium.services;
 
 import com.vitaauxilium.vitaauxilium.dto.request.AuthRequestDTO;
-import com.vitaauxilium.vitaauxilium.dto.response.AuthResponseDTO;
 import com.vitaauxilium.vitaauxilium.mapper.UserMapper;
 import com.vitaauxilium.vitaauxilium.models.User;
 import com.vitaauxilium.vitaauxilium.repositories.UserRepository;
@@ -23,13 +22,13 @@ public class AuthService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthResponseDTO login(AuthRequestDTO dto) {
+    public String login(AuthRequestDTO dto) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.email(), dto.password())
         );
         User user = userRepository.findByEmail(dto.email())
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
-        return new AuthResponseDTO(jwtService.generateToken(user));
+        return jwtService.generateToken(user);
     }
 
     public User register(User user) {
