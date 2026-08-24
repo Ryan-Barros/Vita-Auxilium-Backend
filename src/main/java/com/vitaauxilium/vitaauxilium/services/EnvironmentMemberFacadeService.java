@@ -23,7 +23,7 @@ public class EnvironmentMemberFacadeService {
     private final EnvironmentMapper environmentMapper;
 
     public EnvironmentResponseDTO createWithRelation(User owner, EnvironmentRequestDTO dto) {
-        if (owner.getUserProfile() != Profile.FAMILY) {
+        if (owner.getProfile() != Profile.FAMILY) {
             throw new AccessDeniedException("Precisa ser um familiar para criar um ambiente!");
         }
         Environment env = environmentMapper.toEntity(dto);
@@ -46,7 +46,7 @@ public class EnvironmentMemberFacadeService {
                         .getId()
                         .equals(owner.getId()));
 
-        if (owner.getUserProfile() != Profile.FAMILY || !isMember) {
+        if (owner.getProfile() != Profile.FAMILY || !isMember) {
             throw new AccessDeniedException("Precisa ser um familiar para editar um ambiente!");
         }
 
