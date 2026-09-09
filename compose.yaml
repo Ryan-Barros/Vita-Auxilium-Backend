@@ -1,7 +1,7 @@
 services:
   postgres:
     container_name: "VitaAuxilium-DataBase"
-    image: 'postgres:18'
+    image: 'timescale/timescaledb:latest-pg16'
     environment:
       POSTGRES_DB: vitaauxilium-db
       POSTGRES_PASSWORD: ${DB_PASSWORD}
