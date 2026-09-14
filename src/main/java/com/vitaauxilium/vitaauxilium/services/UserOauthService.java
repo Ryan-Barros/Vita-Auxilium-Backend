@@ -7,6 +7,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -18,6 +19,10 @@ public class UserOauthService {
     public UserOauth findByUserIdAndProvider(UUID userId, Provider provider) {
         return userOauthRepository.findByOauthUser_IdAndOauthProvider(userId, provider)
                 .orElseThrow(() -> new EntityNotFoundException("Login externo não encontrado!"));
+    }
+
+    public Optional<UserOauth> findByUserIdAndProviderOptional(UUID userId, Provider provider) {
+        return userOauthRepository.findByOauthUser_IdAndOauthProvider(userId, provider);
     }
 
     public UserOauth createOauthAccount(UserOauth userOauth) {
