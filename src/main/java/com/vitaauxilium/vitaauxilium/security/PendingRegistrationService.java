@@ -20,7 +20,7 @@ public class PendingRegistrationService {
     public String generateToken(String email, String sub, String name, String picture) {
         return Jwts.builder()
                 .subject(email)
-                .claim("sub", sub)
+                .claim("oauth_sub", sub)
                 .claim("name", name)
                 .claim("picture", picture)
                 .claim("purpose", "oauth_registration") // impede reuso como access_token

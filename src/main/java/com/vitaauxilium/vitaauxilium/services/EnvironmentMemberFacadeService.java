@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -21,6 +22,16 @@ import java.util.UUID;
 public class EnvironmentMemberFacadeService {
     private final EnvironmentService environmentService;
     private final EnvironmentMapper environmentMapper;
+
+    @Transactional(readOnly = true)
+    public List<EnvironmentResponseDTO> findAllByUser(User user) {
+        return environmentMapper.toResponseDTOList(environmentService.findAllByMember(user.getId()));
+    }
+
+    @Transactional(readOnly = true)
+    public EnvironmentResponseDTO findByIdForUser(User user, UUID id) {
+        return environmentMapper.toResponseDTO(environmentService.findByIdForMember(id, user.getId()));
+    }
 
     public EnvironmentResponseDTO createWithRelation(User owner, EnvironmentRequestDTO dto) {
         if (owner.getProfile() != Profile.FAMILY) {
@@ -39,21 +50,11 @@ public class EnvironmentMemberFacadeService {
     }
 
     public EnvironmentResponseDTO updateWithRelation(User owner, EnvironmentUpdateDTO dto, UUID envId) {
-        Environment existingEnv = environmentService.findById(envId);
-        boolean isMember = existingEnv.getMembers().stream()
-                .anyMatch(m -> m
-                        .getUser()
-                        .getId()
-                        .equals(owner.getId()));
-
-        if (owner.getProfile() != Profile.FAMILY || !isMember) {
+        if (owner.getProfile() != Profile.FAMILY) {
             throw new AccessDeniedException("Precisa ser um familiar para editar um ambiente!");
         }
-
-        Environment changesFromDto = environmentMapper.toEntityFromUpdateDTO(dto);
-
-        Environment updatedEnv = environmentService.update(existingEnv, changesFromDto);
-
-        return environmentMapper.toResponseDTO(updatedEnv);
+        Environment existingEnv = environmentService.findByIdForMember(envId, owner.getId());
+        Environment changes = environmentMapper.toEntityFromUpdateDTO(dto);
+        return environmentMapper.toResponseDTO(environmentService.update(existingEnv, changes));
     }
 }

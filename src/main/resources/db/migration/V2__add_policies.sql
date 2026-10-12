@@ -7,7 +7,7 @@ ALTER TABLE device_data SET (
     timescaledb.compress,
     timescaledb.compress_segmentby = 'device_id',
     timescaledb.compress_orderby = 'date DESC'
-);
+    );
 
 -- 2. Adiciona a política de compressão para dados mais antigos que 7 dias
 SELECT add_compression_policy('device_data', INTERVAL '7 days');
@@ -16,4 +16,5 @@ SELECT add_compression_policy('device_data', INTERVAL '7 days');
 SELECT add_retention_policy('device_data', INTERVAL '90 days');
 
 -- 4. Exibe se as políticas foram de fato aplicadas
-SELECT * FROM timescaledb_information.jobs;
+SELECT *
+FROM timescaledb_information.jobs;

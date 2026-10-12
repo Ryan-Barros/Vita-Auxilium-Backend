@@ -1,11 +1,11 @@
 package com.vitaauxilium.vitaauxilium.utils;
 
 public enum EmailTemplate {
-    WELCOME("Bem-vindo ao VitaAuxilium!", 
+    WELCOME("Bem-vindo ao VitaAuxilium!",
             "Bem-vindo(a), %s!\n\n" +
-            "Sua conta no VitaAuxilium foi criada com sucesso.\n" +
-            "Agora você pode acessar nossa plataforma com suas credenciais.\n\n" +
-            "Equipe VitaAuxilium");
+                    "Sua conta no VitaAuxilium foi criada com sucesso.\n" +
+                    "Agora você pode acessar nossa plataforma com suas credenciais.\n\n" +
+                    "Equipe VitaAuxilium");
 
     private final String subject;
     private final String bodyTemplate;

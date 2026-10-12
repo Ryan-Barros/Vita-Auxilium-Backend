@@ -14,7 +14,7 @@ public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "picture", ignore = true)
-    @Mapping(target = "cpf", ignore = true)
+    @Mapping(target = "cpfHash", ignore = true)
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "activeAmbient", ignore = true)
     @Mapping(target = "environments", ignore = true)
@@ -29,7 +29,7 @@ public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "picture", ignore = true)
-    @Mapping(target = "cpf", ignore = true)
+    @Mapping(target = "cpfHash", ignore = true)
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "activeAmbient", ignore = true)
     @Mapping(target = "environments", ignore = true)

@@ -50,5 +50,5 @@ public class Activity {
     private ActivityStatus activityStatus = ActivityStatus.NOT_STARTED;
 
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive = false;
+    private Boolean active = true;
 }

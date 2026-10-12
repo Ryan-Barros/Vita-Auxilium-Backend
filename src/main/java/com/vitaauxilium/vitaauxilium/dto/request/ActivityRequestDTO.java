@@ -12,7 +12,7 @@ public record ActivityRequestDTO(
         UUID environmentId,
 
         @NotBlank
-        UUID category,
+        UUID categoryId,
 
         @NotBlank(message = "Nome obrigatório!")
         @Size(min = 3, max = 35, message = "O nome precisa ter entre 3 e 35 caracteres!")

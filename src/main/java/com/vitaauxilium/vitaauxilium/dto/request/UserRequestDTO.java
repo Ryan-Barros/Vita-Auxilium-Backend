@@ -1,6 +1,5 @@
 package com.vitaauxilium.vitaauxilium.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.vitaauxilium.vitaauxilium.models.Profile;
 import jakarta.validation.constraints.*;
 

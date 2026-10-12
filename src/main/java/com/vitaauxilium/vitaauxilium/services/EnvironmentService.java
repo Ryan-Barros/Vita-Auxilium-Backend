@@ -24,13 +24,13 @@ public class EnvironmentService {
     private final CodeGenerator codeGenerator;
 
     @Transactional(readOnly = true)
-    public List<Environment> findAll() {
-        return environmentRepository.findAll();
+    public List<Environment> findAllByMember(UUID userId) {
+        return environmentRepository.findAllByMemberId(userId);
     }
 
     @Transactional(readOnly = true)
-    public Environment findById(UUID id) {
-        return environmentRepository.findById(id)
+    public Environment findByIdForMember(UUID id, UUID userId) {
+        return environmentRepository.findByIdAndMemberId(id, userId)
                 .orElseThrow(() -> new EntityNotFoundException("Ambiente não encontrado!"));
     }
 

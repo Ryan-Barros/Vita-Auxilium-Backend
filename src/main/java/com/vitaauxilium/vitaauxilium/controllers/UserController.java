@@ -1,6 +1,8 @@
 package com.vitaauxilium.vitaauxilium.controllers;
 
+import com.vitaauxilium.vitaauxilium.dto.request.ConfigRequestDTO;
 import com.vitaauxilium.vitaauxilium.dto.request.UserUpdateDTO;
+import com.vitaauxilium.vitaauxilium.dto.response.ConfigResponseDTO;
 import com.vitaauxilium.vitaauxilium.dto.response.UserResponseDTO;
 import com.vitaauxilium.vitaauxilium.mapper.UserMapper;
 import com.vitaauxilium.vitaauxilium.models.User;
@@ -36,6 +38,18 @@ public class UserController {
         User changes = userMapper.toEntityFromUpdateDTO(dto);
         User updated = userService.update(id, changes);
         return ResponseEntity.accepted().body(userMapper.toResponseDTO(updated));
+    }
+
+    @GetMapping("/config/{id}")
+    public ResponseEntity<ConfigResponseDTO> findConfigById(@PathVariable UUID id) {
+        // TODO
+        return null;
+    }
+
+    @PatchMapping("/config/{id}")
+    public ResponseEntity<ConfigResponseDTO> updateConfig(@PathVariable UUID id, @RequestBody @Valid ConfigRequestDTO dto) {
+        // TODO
+        return null;
     }
 
 }

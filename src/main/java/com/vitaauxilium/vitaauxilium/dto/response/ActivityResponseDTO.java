@@ -10,7 +10,7 @@ public record ActivityResponseDTO(
 
         UUID environmentId,
 
-        UUID category,
+        UUID categoryId,
 
         String activityName,
 
@@ -22,6 +22,6 @@ public record ActivityResponseDTO(
 
         ActivityStatus activityStatus,
 
-        Boolean isActive
+        Boolean active
 ) {
 }

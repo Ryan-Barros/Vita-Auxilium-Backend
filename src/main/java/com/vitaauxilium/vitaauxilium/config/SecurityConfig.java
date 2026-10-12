@@ -4,10 +4,7 @@ import com.vitaauxilium.vitaauxilium.models.Profile;
 import com.vitaauxilium.vitaauxilium.models.Provider;
 import com.vitaauxilium.vitaauxilium.models.User;
 import com.vitaauxilium.vitaauxilium.models.UserOauth;
-import com.vitaauxilium.vitaauxilium.security.DeviceTokenFilter;
-import com.vitaauxilium.vitaauxilium.security.JwtAuthFilter;
-import com.vitaauxilium.vitaauxilium.security.JwtService;
-import com.vitaauxilium.vitaauxilium.security.PendingRegistrationService;
+import com.vitaauxilium.vitaauxilium.security.*;
 import com.vitaauxilium.vitaauxilium.services.UserOauthService;
 import com.vitaauxilium.vitaauxilium.services.UserService;
 import com.vitaauxilium.vitaauxilium.utils.CookieFactory;
@@ -30,7 +27,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 import java.util.Optional;
 
@@ -49,12 +48,14 @@ public class SecurityConfig {
     private long jwtExpiration;
     private final PendingRegistrationService pendingRegistrationService;
     private final CookieFactory cookieFactory;
+    private final CsrfCookieFilter csrfCookieFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                         .ignoringRequestMatchers("/auth/login", "/auth/register", "/auth/complete-registration", "/device/data"))
                 .cors(Customizer.withDefaults())
                 .sessionManagement(s -> s
@@ -113,6 +114,7 @@ public class SecurityConfig {
                         }))
                 .addFilterBefore(deviceTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(csrfCookieFilter, BasicAuthenticationFilter.class)
                 .build();
     }
 

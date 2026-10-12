@@ -2,11 +2,13 @@ package com.vitaauxilium.vitaauxilium.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vitaauxilium.vitaauxilium.config.GeneratedUuidV7;
+import com.vitaauxilium.vitaauxilium.utils.CpfConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.envers.Audited;
 import org.hibernate.validator.constraints.br.CPF;
 import org.jspecify.annotations.NullMarked;
@@ -50,8 +52,10 @@ public class User implements UserDetails {
     private String picture;
 
     @CPF
-    @Column(name = "cpf")
-    private String cpf;
+    @Convert(converter = CpfConverter.class)
+    @ToString.Exclude
+    @Column(name = "cpf_hash", length = 255)
+    private String cpfHash;
 
     @JsonIgnore
     @Column(name = "user_password", length = 60)

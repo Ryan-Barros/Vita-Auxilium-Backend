@@ -46,20 +46,20 @@ public class AuthService {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email já cadastrado");
         }
-        
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
-        
+
         try {
             emailService.enviarEmailTexto(
-                user.getEmail(),
-                EmailTemplate.WELCOME.getSubject(),
-                EmailTemplate.WELCOME.formatBody(user.getName())
+                    user.getEmail(),
+                    EmailTemplate.WELCOME.getSubject(),
+                    EmailTemplate.WELCOME.formatBody(user.getName())
             );
         } catch (Exception e) {
             System.err.println("Erro ao enviar email de boas-vindas: " + e.getMessage());
         }
-        
+
         return savedUser;
     }
 
@@ -76,7 +76,7 @@ public class AuthService {
 
         UserOauth oauth = new UserOauth();
         oauth.setOauthUser(savedUser);
-        oauth.setOauthSub(claims.get("sub", String.class));
+        oauth.setOauthSub(claims.get("oauth_sub", String.class));
         oauth.setOauthProvider(Provider.GOOGLE);
         userOauthRepository.save(oauth);
 
