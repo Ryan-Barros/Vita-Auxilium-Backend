@@ -87,4 +87,20 @@ class GlobalExceptionHandlerTest {
         assertEquals(HttpStatus.CONFLICT.value(), problemDetail.getStatus());
         assertEquals("DUPLICATE", problemDetail.getProperties().get("code"));
     }
+
+    @Test
+    @DisplayName("PropertyReferenceException deve virar 400 com código INVALID_SORT_PROPERTY")
+    void deveTratarPropertyReferenceException() {
+        org.springframework.data.core.PropertyReferenceException ex =
+                new org.springframework.data.core.PropertyReferenceException(
+                        "invalido",
+                        org.springframework.data.core.TypeInformation.of(com.vitaauxilium.vitaauxilium.models.Activity.class),
+                        java.util.List.of());
+
+        ProblemDetail pd = handler.handlePropertyReferenceException(ex);
+
+        assertEquals(HttpStatus.BAD_REQUEST.value(), pd.getStatus());
+        assertEquals("INVALID_SORT_PROPERTY", pd.getProperties().get("code"));
+        assertEquals("Propriedade de ordenação inválida: invalido", pd.getDetail());
+    }
 }

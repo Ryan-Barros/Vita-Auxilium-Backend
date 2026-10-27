@@ -5,10 +5,10 @@ import com.vitaauxilium.vitaauxilium.models.EnvironmentMember;
 import com.vitaauxilium.vitaauxilium.models.Profile;
 import com.vitaauxilium.vitaauxilium.models.User;
 import com.vitaauxilium.vitaauxilium.repositories.EnvironmentRepository;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.test.context.TestPropertySource;
@@ -20,7 +20,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RequiredArgsConstructor
 @DataJpaTest
 @TestPropertySource(properties = {
         "spring.flyway.enabled=false",
@@ -28,8 +27,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 })
 class EnvironmentRepositoryTest {
 
-    private final TestEntityManager em;
-    private final EnvironmentRepository repository;
+    @Autowired
+    private TestEntityManager em;
+
+    @Autowired
+    private EnvironmentRepository repository;
 
     private User userA, userB;
     private Environment envA, envShared;
@@ -72,7 +74,6 @@ class EnvironmentRepositoryTest {
         assertTrue(repository.findByIdAndMemberId(envA.getId(), userA.getId()).isPresent());
     }
 
-    // helpers
     private User persistUser(String email) {
         User u = new User();
         u.setProfile(Profile.FAMILY);

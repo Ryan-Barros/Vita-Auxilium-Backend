@@ -9,7 +9,7 @@ public record EnvironmentResponseDTO(
         String environmentName,
         String environmentCode,
         Instant expirationDate,
-        String activeCode,
+        boolean active,
         List<EnvironmentMemberResponseDTO> members
 ) {
 }

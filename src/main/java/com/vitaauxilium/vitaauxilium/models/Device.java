@@ -24,7 +24,7 @@ public class Device {
     @Column(name = "device_id", updatable = false, nullable = false)
     private UUID id;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "environment_id", nullable = false)
     @JsonIgnoreProperties("members")
     private Environment environment;

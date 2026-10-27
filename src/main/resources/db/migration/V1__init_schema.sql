@@ -4,19 +4,6 @@
 
 create sequence revinfo_seq start with 1 increment by 50;
 
-create table activities
-(
-    activity_id uuid not null,
-    primary key (activity_id)
-);
-create table activities_aud
-(
-    rev         integer not null,
-    revtype     smallint,
-    activity_id uuid    not null,
-    primary key (rev, activity_id)
-);
-
 create table device_data
 (
     accelerometer               numeric(38, 2) not null,
@@ -128,18 +115,7 @@ create table environments_aud
     environment_name varchar(255),
     primary key (rev, environment_id)
 );
-create table reminders
-(
-    reminder_id uuid not null,
-    primary key (reminder_id)
-);
-create table reminders_aud
-(
-    rev         integer not null,
-    revtype     smallint,
-    reminder_id uuid    not null,
-    primary key (rev, reminder_id)
-);
+
 create table revinfo
 (
     rev      integer not null,
@@ -192,7 +168,6 @@ create table users_oauth
     primary key (oauth_id)
 );
 
-alter table if exists activities_aud add constraint FK1hpf6bko3m4d065p7mwowt8v1 foreign key (rev) references revinfo;
 alter table if exists device_data add constraint FKqp5k1ic2hj0q907x8qlf1xh99 foreign key (device_id) references devices;
 alter table if exists device_data_aud add constraint FK1y5dku6m22jg0u2u1y41h7q2m foreign key (rev) references revinfo;
 alter table if exists devices add constraint FK2wkaef8iujx7gu60f8wft6kjm foreign key (environment_id) references environments;
@@ -200,7 +175,6 @@ alter table if exists environment_members add constraint FKlxxbc42bxctjjanvnsj56
 alter table if exists environment_members add constraint FKdvbe4ra3tigkld6cpv7xvaukb foreign key (member_user_id) references users;
 alter table if exists environment_members_aud add constraint FK7x7qkmovt6jea86qy20iyl9fp foreign key (rev) references revinfo;
 alter table if exists environments_aud add constraint FKm5j6owk05if44ob179nl7fru1 foreign key (rev) references revinfo;
-alter table if exists reminders_aud add constraint FKkjywy4p8sxvv1lsrlned1s12f foreign key (rev) references revinfo;
 alter table if exists users_aud add constraint FKc4vk4tui2la36415jpgm9leoq foreign key (rev) references revinfo;
 alter table if exists users_oauth add constraint FKj1yge53cov38we6jtixdf0koi foreign key (oauth_user_id) references users;
 

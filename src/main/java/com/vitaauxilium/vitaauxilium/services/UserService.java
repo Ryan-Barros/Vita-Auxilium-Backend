@@ -1,11 +1,14 @@
 package com.vitaauxilium.vitaauxilium.services;
 
+import com.vitaauxilium.vitaauxilium.dto.request.UserUpdateDTO;
 import com.vitaauxilium.vitaauxilium.mapper.UserMapper;
 import com.vitaauxilium.vitaauxilium.models.User;
 import com.vitaauxilium.vitaauxilium.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +20,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public List<User> findAll() {
         return userRepository.findAll();
@@ -48,10 +52,20 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public User update(UUID id, User changes) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado!"));
-        userMapper.updateEntityFromDTO(user, changes);
+    @Transactional
+    public User update(UUID id, UserUpdateDTO dto) {
+        User user = findById(id);
+        userMapper.updateFromDTO(dto, user);
+        if (dto.password() != null && !dto.password().isBlank()) {
+            user.setPassword(passwordEncoder.encode(dto.password()));
+        }
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public void deactivate(UUID id) {
+        User user = findById(id);
+        user.setActive(false);
+        userRepository.save(user);
     }
 }

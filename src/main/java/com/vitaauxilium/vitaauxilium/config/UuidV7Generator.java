@@ -9,6 +9,6 @@ import java.io.Serializable;
 
 public class UuidV7Generator implements IdentifierGenerator {
     public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
-        return Generators.timeBasedGenerator().generate();
+        return Generators.timeBasedEpochGenerator().generate();
     }
 }

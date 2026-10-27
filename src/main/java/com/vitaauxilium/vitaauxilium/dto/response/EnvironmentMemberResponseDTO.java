@@ -5,6 +5,8 @@ import java.util.UUID;
 public record EnvironmentMemberResponseDTO(
         UUID id,
         UUID userId,
+        String userName,
+        String userProfile,
         UUID environmentId
 ) {
 }

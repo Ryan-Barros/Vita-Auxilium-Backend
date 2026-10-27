@@ -20,5 +20,6 @@ public interface DeviceMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "data", ignore = true)
     @Mapping(target = "environment", ignore = true)
+    @Mapping(target = "tokenHash", ignore = true)
     Device toEntity(DeviceRequestDTO dto);
 }

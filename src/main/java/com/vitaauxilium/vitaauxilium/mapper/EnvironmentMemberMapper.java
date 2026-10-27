@@ -12,6 +12,8 @@ import java.util.List;
 public interface EnvironmentMemberMapper {
 
     @Mapping(target = "userId", source = "user.id")
+    @Mapping(target = "userName", source = "user.name")
+    @Mapping(target = "userProfile", source = "user.profile")
     @Mapping(target = "environmentId", source = "environment.id")
     EnvironmentMemberResponseDTO toResponseDTO(EnvironmentMember entity);
 

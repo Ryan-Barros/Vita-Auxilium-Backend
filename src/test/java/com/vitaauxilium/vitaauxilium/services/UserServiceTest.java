@@ -1,5 +1,6 @@
 package com.vitaauxilium.vitaauxilium.services;
 
+import com.vitaauxilium.vitaauxilium.dto.request.UserUpdateDTO;
 import com.vitaauxilium.vitaauxilium.mapper.UserMapper;
 import com.vitaauxilium.vitaauxilium.models.Profile;
 import com.vitaauxilium.vitaauxilium.models.User;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,23 +20,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/**
- * UserServiceTest usa a implementação REAL do UserMapper (gerada pelo MapStruct
- * em tempo de compilação, via Mappers.getMapper), e não um mock — isso é
- * proposital: o objetivo do teste abaixo é expor um bug de integração entre
- * UserService e UserMapper que um mock do mapper esconderia completamente.
- */
 class UserServiceTest {
 
     private UserRepository userRepository;
     private UserMapper userMapper;
+    private PasswordEncoder passwordEncoder;
     private UserService userService;
 
     @BeforeEach
     void setUp() {
         userRepository = mock(UserRepository.class);
         userMapper = Mappers.getMapper(UserMapper.class);
-        userService = new UserService(userRepository, userMapper);
+        passwordEncoder = mock(PasswordEncoder.class);
+        userService = new UserService(userRepository, userMapper, passwordEncoder);
     }
 
     @Test
@@ -81,13 +79,8 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName(
-            "BUG CONHECIDO (analise_seguranca.md, achado #5): update() não aplica os campos de 'changes' " +
-                    "no usuário existente, porque a ordem dos argumentos passados a updateEntityFromDTO está invertida. " +
-                    "Este teste documenta o comportamento ATUAL; ele deve começar a FALHAR assim que o bug for corrigido " +
-                    "em UserService.update() — nesse momento, atualize também o texto da TCC sobre este achado."
-    )
-    void updateNaoAplicaAsAlteracoesPorCausaDaInversaoDeParametros() {
+    @DisplayName("update deve aplicar as alterações de UserUpdateDTO preservando perfil, e-mail e status ativo")
+    void updateDeveAplicarAlteracoesPreservandoCamposProtegidos() {
         UUID id = UUID.randomUUID();
 
         User usuarioExistente = new User();
@@ -96,21 +89,22 @@ class UserServiceTest {
         usuarioExistente.setPhone("11911111111");
         usuarioExistente.setEmail("antigo@vitaauxilium.com");
         usuarioExistente.setProfile(Profile.FAMILY);
+        usuarioExistente.setActive(true);
 
-        User alteracoesDesejadas = new User();
-        alteracoesDesejadas.setName("Nome Novo");
-        alteracoesDesejadas.setPhone("11922222222");
+        UserUpdateDTO dto = new UserUpdateDTO("Nome Novo", "11922222222", "novaSenha123");
 
         when(userRepository.findById(id)).thenReturn(Optional.of(usuarioExistente));
+        when(passwordEncoder.encode("novaSenha123")).thenReturn("$2a$novaHash");
         when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        User resultado = userService.update(id, alteracoesDesejadas);
+        User resultado = userService.update(id, dto);
 
-        // Comportamento hoje (com o bug): o nome/telefone NÃO são atualizados,
-        // porque `usuarioExistente` foi usado como origem e `alteracoesDesejadas`
-        // como alvo do mapeamento — exatamente o oposto do que a intenção do método sugere.
-        assertEquals("Nome Antigo", resultado.getName());
-        assertEquals("11911111111", resultado.getPhone());
+        assertEquals("Nome Novo", resultado.getName());
+        assertEquals("11922222222", resultado.getPhone());
+        assertEquals("$2a$novaHash", resultado.getPassword());
+        assertEquals("antigo@vitaauxilium.com", resultado.getEmail());
+        assertEquals(Profile.FAMILY, resultado.getProfile());
+        assertTrue(resultado.isActive());
     }
 
     @Test

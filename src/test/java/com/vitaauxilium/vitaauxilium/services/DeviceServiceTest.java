@@ -128,4 +128,57 @@ class DeviceServiceTest {
 
         assertEquals(1, resultado.size());
     }
+
+    @Test
+    @DisplayName("findByActiveEnvironment com Pageable deve retornar página de dispositivos")
+    void findByActiveEnvironmentPaginadoDeveRetornarPaginaDeDispositivos() {
+        UUID envId = UUID.randomUUID();
+        com.vitaauxilium.vitaauxilium.models.User user = new com.vitaauxilium.vitaauxilium.models.User();
+        user.setId(UUID.randomUUID());
+        user.setActiveAmbient(envId);
+
+        Environment env = new Environment();
+        env.setId(envId);
+
+        Device d1 = new Device();
+        d1.setName("Relógio Idoso 1");
+
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 10);
+        org.springframework.data.domain.Page<Device> mockPage = new org.springframework.data.domain.PageImpl<>(
+                List.of(d1), pageable, 1);
+
+        when(environmentRepository.findByIdAndMemberId(envId, user.getId())).thenReturn(Optional.of(env));
+        when(deviceRepository.findAllByEnvironment_Id(envId, pageable)).thenReturn(mockPage);
+
+        org.springframework.data.domain.Page<Device> result = deviceService.findByActiveEnvironment(user, pageable);
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals("Relógio Idoso 1", result.getContent().get(0).getName());
+    }
+
+    @Test
+    @DisplayName("createForUser deve permitir cadastrar múltiplos dispositivos no mesmo ambiente para FAMILY")
+    void createForUserDevePermitirMultiplosDispositivosNoMesmoAmbiente() {
+        UUID envId = UUID.randomUUID();
+        com.vitaauxilium.vitaauxilium.models.User familyUser = new com.vitaauxilium.vitaauxilium.models.User();
+        familyUser.setId(UUID.randomUUID());
+        familyUser.setProfile(com.vitaauxilium.vitaauxilium.models.Profile.FAMILY);
+        familyUser.setActiveAmbient(envId);
+
+        Environment env = new Environment();
+        env.setId(envId);
+
+        when(environmentRepository.findByIdAndMemberId(envId, familyUser.getId())).thenReturn(Optional.of(env));
+        when(deviceCrypto.hashToken(anyString())).thenReturn("hashed-token");
+        when(deviceRepository.save(any(Device.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        com.vitaauxilium.vitaauxilium.dto.request.DeviceRequestDTO dto =
+                new com.vitaauxilium.vitaauxilium.dto.request.DeviceRequestDTO(envId, "Relógio 2", "TOKEN-12345");
+
+        Device saved = deviceService.createForUser(dto, familyUser);
+
+        assertEquals("Relógio 2", saved.getName());
+        assertEquals(env, saved.getEnvironment());
+        verify(deviceRepository).save(any(Device.class));
+    }
 }

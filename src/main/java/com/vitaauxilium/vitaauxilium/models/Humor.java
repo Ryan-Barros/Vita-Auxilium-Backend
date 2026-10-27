@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -21,7 +22,19 @@ public class Humor {
     @Column(name = "humor_id", unique = true, nullable = false)
     private UUID id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "environment_id")
+    @ToString.Exclude
+    private Environment environment;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @ToString.Exclude
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "activity_activity_id")
+    @ToString.Exclude
     private Activity activity;
 
     @Column(name = "humor", nullable = false)
@@ -29,11 +42,11 @@ public class Humor {
     private HumorRange humor = HumorRange.HAPPY;
 
     @Column(name = "humor_intensity", nullable = false)
-    private int intensity;
+    private int intensity = 3;
 
     @Column(name = "observation")
     private String observation;
 
     @Column(name = "registration_time")
-    private Instant registrationTime;
+    private Instant registrationTime = Instant.now();
 }

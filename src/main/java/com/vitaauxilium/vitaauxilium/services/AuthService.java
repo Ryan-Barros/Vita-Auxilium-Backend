@@ -2,6 +2,7 @@ package com.vitaauxilium.vitaauxilium.services;
 
 import com.vitaauxilium.vitaauxilium.dto.request.AuthRequestDTO;
 import com.vitaauxilium.vitaauxilium.dto.request.OAuthCompleteRegistrationDTO;
+import com.vitaauxilium.vitaauxilium.exception.DuplicateResourceException;
 import com.vitaauxilium.vitaauxilium.mapper.UserMapper;
 import com.vitaauxilium.vitaauxilium.models.Provider;
 import com.vitaauxilium.vitaauxilium.models.User;
@@ -15,11 +16,14 @@ import com.vitaauxilium.vitaauxilium.utils.EmailTemplate;
 import io.jsonwebtoken.Claims;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -31,7 +35,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final PendingRegistrationService pendingRegistrationService;
-    public final UserOauthRepository userOauthRepository;
+    private final UserOauthRepository userOauthRepository;
+    private final EnvironmentMemberFacadeService environmentMemberFacadeService;
 
     public String login(AuthRequestDTO dto) {
         authenticationManager.authenticate(
@@ -42,13 +47,23 @@ public class AuthService {
         return jwtService.generateToken(user);
     }
 
+    @Transactional
     public User register(User user) {
+        return register(user, null);
+    }
+
+    @Transactional
+    public User register(User user, String inviteCode) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email já cadastrado");
+            throw new DuplicateResourceException("Email já cadastrado");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
+
+        if (inviteCode != null && !inviteCode.isBlank() && environmentMemberFacadeService != null) {
+            environmentMemberFacadeService.joinByCode(savedUser, inviteCode);
+        }
 
         try {
             emailService.enviarEmailTexto(
@@ -57,12 +72,13 @@ public class AuthService {
                     EmailTemplate.WELCOME.formatBody(user.getName())
             );
         } catch (Exception e) {
-            System.err.println("Erro ao enviar email de boas-vindas: " + e.getMessage());
+            log.warn("Falha não crítica ao enviar e-mail de boas-vindas");
         }
 
         return savedUser;
     }
 
+    @Transactional
     public User completeOAuthRegistration(String pendingToken, OAuthCompleteRegistrationDTO dto) {
         Claims claims = pendingRegistrationService.parseAndValidate(pendingToken);
 

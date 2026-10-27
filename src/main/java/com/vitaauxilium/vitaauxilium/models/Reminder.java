@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -13,7 +15,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Audited
+@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 @Entity
 @Table(name = "reminders")
 public class Reminder {
@@ -24,6 +26,7 @@ public class Reminder {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Environment environment;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,6 +43,9 @@ public class Reminder {
 
     @Column(name = "reminder_loop")
     private Boolean loop = false;
+
+    @Column(name = "is_completed", nullable = false)
+    private Boolean completed = false;
 
     @Column(name = "is_active")
     private Boolean isActive = true;

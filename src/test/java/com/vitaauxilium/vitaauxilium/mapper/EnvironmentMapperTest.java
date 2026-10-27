@@ -1,7 +1,9 @@
 package com.vitaauxilium.vitaauxilium.mapper;
 
 import com.vitaauxilium.vitaauxilium.dto.request.EnvironmentRequestDTO;
+import com.vitaauxilium.vitaauxilium.dto.request.EnvironmentUpdateDTO;
 import com.vitaauxilium.vitaauxilium.models.Environment;
+import com.vitaauxilium.vitaauxilium.models.EnvironmentMember;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -9,8 +11,7 @@ import org.mapstruct.factory.Mappers;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class EnvironmentMapperTest {
 
@@ -29,25 +30,26 @@ class EnvironmentMapperTest {
     }
 
     @Test
-    @DisplayName(
-            "CONTRATO CORRETO do mapper (para contraste com o bug de EnvironmentService.update): " +
-                    "quando chamado na ordem (source=mudanças, target=existente), o mapper realmente sobrepõe " +
-                    "os campos não nulos de 'mudanças' sobre 'existente', ignorando nulos."
-    )
-    void updateEnvironmentFromEntity_QuandoUsadoNaOrdemCorreta_AplicaAsMudancas() {
+    @DisplayName("updateFromDTO aplica só os campos enviados e preserva código, membros e status")
+    void updateFromDTO_AplicaApenasCamposPermitidos() {
         Environment existente = new Environment();
         existente.setEnvironmentName("Nome Antigo");
         existente.setEnvironmentCode("INVAAAAAAAA");
-        existente.setExpirationDate(Instant.now().plus(30, ChronoUnit.DAYS));
+        Instant expiracaoOriginal = Instant.now().plus(30, ChronoUnit.DAYS);
+        existente.setExpirationDate(expiracaoOriginal);
 
-        Environment mudancas = new Environment();
-        mudancas.setEnvironmentName("Nome Novo");
-        // environmentCode e expirationDate ficam nulos em 'mudancas' de propósito
+        EnvironmentMember membro = new EnvironmentMember();
+        existente.addMember(membro);
 
-        // Ordem CORRETA: (source = mudancas, target = existente)
-        environmentMapper.updateEnvironmentFromEntity(mudancas, existente);
+        // PATCH: só o nome é enviado (nome, expirationDate)
+        EnvironmentUpdateDTO dto = new EnvironmentUpdateDTO("Nome Novo", null);
+
+        environmentMapper.updateFromDTO(dto, existente);
 
         assertEquals("Nome Novo", existente.getEnvironmentName());
-        assertEquals("INVAAAAAAAA", existente.getEnvironmentCode(), "Nulo em 'mudancas' não deve sobrescrever");
+        assertEquals("INVAAAAAAAA", existente.getEnvironmentCode());
+        assertEquals(expiracaoOriginal, existente.getExpirationDate());
+        assertEquals(1, existente.getMembers().size());
+        assertTrue(existente.isActive());
     }
 }

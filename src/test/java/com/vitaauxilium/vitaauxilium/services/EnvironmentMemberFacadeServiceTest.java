@@ -8,6 +8,7 @@ import com.vitaauxilium.vitaauxilium.models.Environment;
 import com.vitaauxilium.vitaauxilium.models.EnvironmentMember;
 import com.vitaauxilium.vitaauxilium.models.Profile;
 import com.vitaauxilium.vitaauxilium.models.User;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -89,42 +90,69 @@ class EnvironmentMemberFacadeServiceTest {
     }
 
     @Test
-    @DisplayName("updateWithRelation deve lançar AccessDeniedException quando o usuário for FAMILY mas não for membro do ambiente")
-    void updateDeveNegarAcessoQuandoFamiliarNaoEhMembro() {
-        UUID envId = UUID.randomUUID();
-        Environment ambienteSemEsseFamiliar = new Environment();
-        ambienteSemEsseFamiliar.setMembers(new ArrayList<>()); // ninguém é membro
-
-        when(environmentService.finenvId)).thenReturn(ambienteSemEsseFamiliar);
-
-        EnvironmentUpdateDTO dto = new EnvironmentUpdateDTO("Novo Nome", null, null);
+    @DisplayName("updateWithRelation deve lançar AccessDeniedException quando o usuário não for FAMILY")
+    void updateDeveNegarAcessoParaNaoFamiliar() {
+        EnvironmentUpdateDTO dto = new EnvironmentUpdateDTO("Novo Nome", null);
 
         assertThrows(AccessDeniedException.class,
-                () -> facadeService.updateWithRelation(familiar, dto, envId));
+                () -> facadeService.updateWithRelation(cuidador, dto, UUID.randomUUID()));
+
+        verifyNoInteractions(environmentService);
     }
 
     @Test
-    @DisplayName("updateWithRelation deve permitir a atualização quando o usuário é FAMILY e membro do ambiente")
+    @DisplayName("updateWithRelation deve lançar EntityNotFoundException quando o FAMILY não é membro (não revela a existência do ambiente)")
+    void updateDeveFalharComNotFoundQuandoFamiliarNaoEhMembro() {
+        UUID envId = UUID.randomUUID();
+        when(environmentService.findByIdForMember(envId, familiar.getId()))
+                .thenThrow(new EntityNotFoundException("Ambiente não encontrado!"));
+
+        EnvironmentUpdateDTO dto = new EnvironmentUpdateDTO("Novo Nome", null);
+
+        assertThrows(EntityNotFoundException.class,
+                () -> facadeService.updateWithRelation(familiar, dto, envId));
+        verify(environmentService, never()).update(any(), any());
+    }
+
+    @Test
+    @DisplayName("updateWithRelation deve atualizar quando o usuário é FAMILY e membro do ambiente")
     void updateDevePermitirQuandoFamiliarEhMembro() {
         UUID envId = UUID.randomUUID();
-
-        Environment ambienteExistente = new Environment();
-        EnvironmentMember membro = new EnvironmentMember();
-        membro.setUser(familiar);
-        ambienteExistente.setMembers(new ArrayList<>(java.util.List.of(membro)));
-
-        Environment mudancas = new Environment();
+        Environment existente = new Environment();
         Environment atualizado = new Environment();
+        EnvironmentUpdateDTO dto = new EnvironmentUpdateDTO("Novo Nome", null);
 
-        EnvironmentUpdateDTO dto = new EnvironmentUpdateDTO("Novo Nome", null, null);
-
-        when(environmentService.findById(envId)).thenReturn(ambienteExistente);
-        when(environmentMapper.toEntityFromUpdateDTO(dto)).thenReturn(mudancas);
-        when(environmentService.update(ambienteExistente, mudancas)).thenReturn(atualizado);
+        when(environmentService.findByIdForMember(envId, familiar.getId())).thenReturn(existente);
+        when(environmentService.update(existente, dto)).thenReturn(atualizado);
 
         facadeService.updateWithRelation(familiar, dto, envId);
 
-        verify(environmentService).update(ambienteExistente, mudancas);
+        verify(environmentService).update(existente, dto);
         verify(environmentMapper).toResponseDTO(atualizado);
+    }
+
+    @Test
+    @DisplayName("findAllByUser com Pageable deve retornar PageResponseDTO de ambientes")
+    void findAllByUserPaginadoDeveRetornarPageResponseDTO() {
+        Environment env = new Environment();
+        env.setId(UUID.randomUUID());
+        env.setEnvironmentName("Lar Doce Lar");
+
+        com.vitaauxilium.vitaauxilium.dto.response.EnvironmentResponseDTO dto =
+                new com.vitaauxilium.vitaauxilium.dto.response.EnvironmentResponseDTO(
+                        env.getId(), env.getEnvironmentName(), "INV12345678", java.time.Instant.now(), true, java.util.List.of());
+
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 10);
+        org.springframework.data.domain.Page<Environment> page = new org.springframework.data.domain.PageImpl<>(
+                java.util.List.of(env), pageable, 1);
+
+        when(environmentService.findAllByMember(familiar.getId(), pageable)).thenReturn(page);
+        when(environmentMapper.toResponseDTO(env)).thenReturn(dto);
+
+        com.vitaauxilium.vitaauxilium.dto.response.PageResponseDTO<com.vitaauxilium.vitaauxilium.dto.response.EnvironmentResponseDTO> result =
+                facadeService.findAllByUser(familiar, pageable);
+
+        assertEquals(1, result.totalElements());
+        assertEquals("Lar Doce Lar", result.content().get(0).environmentName());
     }
 }

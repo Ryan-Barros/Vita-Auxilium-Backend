@@ -7,21 +7,14 @@ import java.util.UUID;
 
 public record ActivityResponseDTO(
         UUID id,
-
         UUID environmentId,
-
         UUID categoryId,
-
+        String categoryName,
         String activityName,
-
         String activityDescription,
-
         LocalDateTime activityStart,
-
         LocalDateTime activityEnd,
-
         ActivityStatus activityStatus,
-
         Boolean active
 ) {
 }

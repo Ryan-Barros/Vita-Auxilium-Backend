@@ -23,17 +23,16 @@ public interface UserMapper {
 
     List<UserResponseDTO> toResponseDTOList(List<User> users);
 
-    @Mapping(target = "authorities", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromDTO(User source, @MappingTarget User target);
-
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "profile", ignore = true)
     @Mapping(target = "picture", ignore = true)
     @Mapping(target = "cpfHash", ignore = true)
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "activeAmbient", ignore = true)
     @Mapping(target = "environments", ignore = true)
     @Mapping(target = "authorities", ignore = true)
-    @Mapping(target = "profile", ignore = true)
-    User toEntityFromUpdateDTO(UserUpdateDTO dto);
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "email", ignore = true)
+    void updateFromDTO(UserUpdateDTO dto, @MappingTarget User target);
 }

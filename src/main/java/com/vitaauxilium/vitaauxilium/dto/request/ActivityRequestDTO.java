@@ -1,32 +1,36 @@
 package com.vitaauxilium.vitaauxilium.dto.request;
 
 import com.vitaauxilium.vitaauxilium.models.ActivityStatus;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record ActivityRequestDTO(
-        @NotBlank
         UUID environmentId,
 
-        @NotBlank
         UUID categoryId,
 
+        String categoryName,
+
         @NotBlank(message = "Nome obrigatório!")
-        @Size(min = 3, max = 35, message = "O nome precisa ter entre 3 e 35 caracteres!")
+        @Size(min = 3, max = 100, message = "O nome precisa ter entre 3 e 100 caracteres!")
         String activityName,
 
         String activityDescription,
 
-        @NotBlank(message = "A data de início é obrigatória!")
+        @NotNull(message = "A data de início é obrigatória!")
         LocalDateTime activityStart,
 
-        @NotBlank(message = "A data de fim é obrigatória!")
         LocalDateTime activityEnd,
 
-        @NotBlank(message = "Status da Activity é obrigatório!")
         ActivityStatus activityStatus
 ) {
+    @AssertTrue(message = "A data de término deve ser igual ou posterior à data de início!")
+    public boolean isEndValid() {
+        return activityStart == null || activityEnd == null || !activityEnd.isBefore(activityStart);
+    }
 }

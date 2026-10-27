@@ -4,15 +4,18 @@ import com.vitaauxilium.vitaauxilium.dto.request.EnvironmentRequestDTO;
 import com.vitaauxilium.vitaauxilium.dto.request.EnvironmentUpdateDTO;
 import com.vitaauxilium.vitaauxilium.dto.response.EnvironmentResponseDTO;
 import com.vitaauxilium.vitaauxilium.models.Environment;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = EnvironmentMemberMapper.class)
+@Mapper(componentModel = "spring", uses = EnvironmentMemberMapper.class, unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface EnvironmentMapper {
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "environmentCode", ignore = true)
+    @Mapping(target = "expirationDate", ignore = true)
+    @Mapping(target = "active", ignore = true)
+    @Mapping(target = "members", ignore = true)
     Environment toEntity(EnvironmentRequestDTO dto);
 
     EnvironmentResponseDTO toResponseDTO(Environment environment);
@@ -20,7 +23,9 @@ public interface EnvironmentMapper {
     List<EnvironmentResponseDTO> toResponseDTOList(List<Environment> environments);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEnvironmentFromEntity(Environment source, @MappingTarget Environment target);
-
-    Environment toEntityFromUpdateDTO(EnvironmentUpdateDTO dto);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "members", ignore = true)
+    @Mapping(target = "active", ignore = true)
+    @Mapping(target = "environmentCode", ignore = true)
+    void updateFromDTO(EnvironmentUpdateDTO dto, @MappingTarget Environment target);
 }

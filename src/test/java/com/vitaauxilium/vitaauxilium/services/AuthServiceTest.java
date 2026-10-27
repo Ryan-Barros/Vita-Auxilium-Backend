@@ -2,6 +2,7 @@ package com.vitaauxilium.vitaauxilium.services;
 
 import com.vitaauxilium.vitaauxilium.dto.request.AuthRequestDTO;
 import com.vitaauxilium.vitaauxilium.dto.request.OAuthCompleteRegistrationDTO;
+import com.vitaauxilium.vitaauxilium.exception.DuplicateResourceException;
 import com.vitaauxilium.vitaauxilium.mapper.UserMapper;
 import com.vitaauxilium.vitaauxilium.models.Profile;
 import com.vitaauxilium.vitaauxilium.models.User;
@@ -47,6 +48,8 @@ class AuthServiceTest {
     private PendingRegistrationService pendingRegistrationService;
     @Mock
     private UserOauthRepository userOauthRepository;
+    @Mock
+    private EnvironmentMemberFacadeService environmentMemberFacadeService;
 
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
@@ -55,10 +58,9 @@ class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
-        // @InjectMocks usa reflection e injeta os @Mock; como userMapper não é
-        // um @Mock e sim uma instância real do MapStruct, setamos manualmente.
         authService = new AuthService(authenticationManager, jwtService, userRepository,
-                userMapper, passwordEncoder, emailService, pendingRegistrationService, userOauthRepository);
+                userMapper, passwordEncoder, emailService, pendingRegistrationService, userOauthRepository,
+                environmentMemberFacadeService);
     }
 
     @Test
@@ -86,13 +88,13 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("register deve lançar IllegalArgumentException quando o e-mail já estiver cadastrado")
+    @DisplayName("register deve lançar DuplicateResourceException quando o e-mail já estiver cadastrado")
     void registerDeveLancarExcecaoParaEmailDuplicado() {
         User novoUsuario = new User();
         novoUsuario.setEmail("duplicado@vitaauxilium.com");
         when(userRepository.findByEmail("duplicado@vitaauxilium.com")).thenReturn(Optional.of(new User()));
 
-        assertThrows(IllegalArgumentException.class, () -> authService.register(novoUsuario));
+        assertThrows(DuplicateResourceException.class, () -> authService.register(novoUsuario));
         verify(userRepository, never()).save(any());
     }
 
@@ -128,6 +130,42 @@ class AuthServiceTest {
                 .when(emailService).enviarEmailTexto(anyString(), anyString(), anyString());
 
         assertDoesNotThrow(() -> authService.register(novoUsuario));
+    }
+
+    @Test
+    @DisplayName("register com inviteCode válido deve associar o usuário ao ambiente via EnvironmentMemberFacadeService")
+    void registerComInviteCodeDeveAssociarAoAmbiente() {
+        User novoUsuario = new User();
+        novoUsuario.setEmail("convidado@vitaauxilium.com");
+        novoUsuario.setName("Convidado");
+        novoUsuario.setPassword("senha");
+
+        when(userRepository.findByEmail("convidado@vitaauxilium.com")).thenReturn(Optional.empty());
+        when(passwordEncoder.encode("senha")).thenReturn("hash");
+        when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        User salvo = authService.register(novoUsuario, "INV12345678");
+
+        assertNotNull(salvo);
+        verify(environmentMemberFacadeService).joinByCode(salvo, "INV12345678");
+    }
+
+    @Test
+    @DisplayName("register sem inviteCode não deve acionar EnvironmentMemberFacadeService")
+    void registerSemInviteCodeNaoDeveAcionarFacade() {
+        User novoUsuario = new User();
+        novoUsuario.setEmail("semcodigo@vitaauxilium.com");
+        novoUsuario.setName("Sem Codigo");
+        novoUsuario.setPassword("senha");
+
+        when(userRepository.findByEmail("semcodigo@vitaauxilium.com")).thenReturn(Optional.empty());
+        when(passwordEncoder.encode("senha")).thenReturn("hash");
+        when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        User salvo = authService.register(novoUsuario, "   ");
+
+        assertNotNull(salvo);
+        verifyNoInteractions(environmentMemberFacadeService);
     }
 
     @Test

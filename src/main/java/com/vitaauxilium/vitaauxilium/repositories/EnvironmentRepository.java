@@ -1,6 +1,8 @@
 package com.vitaauxilium.vitaauxilium.repositories;
 
 import com.vitaauxilium.vitaauxilium.models.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,9 +16,25 @@ public interface EnvironmentRepository extends JpaRepository<Environment, UUID> 
 
     Boolean existsByEnvironmentCode(String code);
 
+    @Query(value = """
+            select e from Environment e
+            where e.isActive = true and exists (
+                select 1 from EnvironmentMember m
+                where m.environment = e and m.user.id = :userId
+            )
+            """,
+            countQuery = """
+            select count(e) from Environment e
+            where e.isActive = true and exists (
+                select 1 from EnvironmentMember m
+                where m.environment = e and m.user.id = :userId
+            )
+            """)
+    Page<Environment> findAllByMemberId(@Param("userId") UUID userId, Pageable pageable);
+
     @Query("""
             select e from Environment e
-            where exists (
+            where e.isActive = true and exists (
                 select 1 from EnvironmentMember m
                 where m.environment = e and m.user.id = :userId
             )
@@ -25,7 +43,7 @@ public interface EnvironmentRepository extends JpaRepository<Environment, UUID> 
 
     @Query("""
             select e from Environment e
-            where e.id = :id and exists (
+            where e.id = :id and e.isActive = true and exists (
                 select 1 from EnvironmentMember m
                 where m.environment = e and m.user.id = :userId
             )

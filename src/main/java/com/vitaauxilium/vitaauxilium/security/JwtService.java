@@ -40,7 +40,15 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        return extractEmail(token).equals(userDetails.getUsername())
+        var claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        if (claims.get("purpose") != null) {
+            return false;
+        }
+        return claims.getSubject().equals(userDetails.getUsername())
                 && !isTokenExpired(token);
     }
 

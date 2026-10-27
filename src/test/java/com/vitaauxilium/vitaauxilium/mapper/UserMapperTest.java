@@ -11,13 +11,6 @@ import org.mapstruct.factory.Mappers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Testa a implementação REAL gerada pelo MapStruct (via Mappers.getMapper),
- * não um mock. Como UserMapper usa unmappedTargetPolicy = ReportingPolicy.ERROR,
- * o simples fato de o projeto compilar já garante que todo campo de destino tem
- * mapeamento ou @Mapping(ignore=true) explícito — estes testes validam o
- * COMPORTAMENTO desses mapeamentos, não apenas a existência deles.
- */
 class UserMapperTest {
 
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
@@ -34,7 +27,7 @@ class UserMapperTest {
         assertEquals("11988887777", entidade.getPhone());
         assertEquals(Profile.ELDERLY, entidade.getProfile());
         assertEquals("maria@vitaauxilium.com", entidade.getEmail());
-        assertEquals("senha123", entidade.getPassword()); // hashing acontece em AuthService, não no mapper
+        assertEquals("senha123", entidade.getPassword());
 
         assertNull(entidade.getId());
         assertNull(entidade.getPicture());
@@ -59,36 +52,26 @@ class UserMapperTest {
 
         assertEquals("Ana Cuidadora", dto.name());
         assertEquals("CAREGIVER", dto.profile());
-        // UserResponseDTO nem sequer tem campo password/cpf — a garantia é estrutural,
-        // reforçada aqui para documentar a intenção de design.
     }
 
     @Test
-    @DisplayName("updateEntityFromDTO deve ignorar campos nulos do DTO e preservar os valores existentes na entidade")
-    void updateEntityFromDTODeveIgnorarCamposNulos() {
+    @DisplayName("updateFromDTO deve ignorar campos nulos do DTO e preservar os valores existentes na entidade")
+    void updateFromDTODeveIgnorarCamposNulos() {
         User entidadeExistente = new User();
         entidadeExistente.setName("Nome Original");
         entidadeExistente.setPhone("11911111111");
         entidadeExistente.setEmail("original@vitaauxilium.com");
+        entidadeExistente.setProfile(Profile.FAMILY);
+        entidadeExistente.setPassword("hashOriginal");
 
-        // Apenas o nome é enviado no PATCH; telefone e e-mail continuam nulos na origem
-        User patch = new User();
-        patch.setName("Nome Atualizado");
+        UserUpdateDTO patch = new UserUpdateDTO("Nome Atualizado", null, null);
 
-        userMapper.updateEntityFromDTO(patch, entidadeExistente);
+        userMapper.updateFromDTO(patch, entidadeExistente);
 
         assertEquals("Nome Atualizado", entidadeExistente.getName());
-        assertEquals("11911111111", entidadeExistente.getPhone(), "Campo não enviado no PATCH deve permanecer");
-        assertEquals("original@vitaauxilium.com", entidadeExistente.getEmail(), "Campo não enviado no PATCH deve permanecer");
-    }
-
-    @Test
-    @DisplayName("toEntityFromUpdateDTO deve ignorar 'profile' (perfil não é alterável via PATCH de usuário)")
-    void toEntityFromUpdateDTODeveIgnorarProfile() {
-        UserUpdateDTO dto = new UserUpdateDTO("Nome", "11999999999", "email@vitaauxilium.com", "novaSenha");
-
-        User entidade = userMapper.toEntityFromUpdateDTO(dto);
-
-        assertNull(entidade.getProfile());
+        assertEquals("11911111111", entidadeExistente.getPhone());
+        assertEquals("original@vitaauxilium.com", entidadeExistente.getEmail());
+        assertEquals(Profile.FAMILY, entidadeExistente.getProfile());
+        assertEquals("hashOriginal", entidadeExistente.getPassword());
     }
 }
